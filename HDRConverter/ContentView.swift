@@ -7,17 +7,6 @@ struct ContentView: View {
         NavigationStack {
             mainContent
                 .navigationTitle("HDR 转换器")
-                .toolbar {
-                    ToolbarItem(placement: .automatic) {
-                        Button {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                viewModel.selectInputFiles()
-                            }
-                        } label: {
-                            Label("添加文件", systemImage: "plus")
-                        }
-                    }
-                }
         }
         .frame(minWidth: 680, idealWidth: 780, maxWidth: .infinity, minHeight: 680, idealHeight: 780, maxHeight: .infinity)
         .sheet(isPresented: $viewModel.isConverting) {
@@ -40,7 +29,6 @@ struct ContentView: View {
                         commandPreviewSection
                         outputSettingsSection
                         advancedSettingsSection
-                        convertButtonSection
                     }
                     .padding()
                     .frame(maxWidth: .infinity)
@@ -54,6 +42,10 @@ struct ContentView: View {
                     .padding()
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
+            
+            Divider()
+            convertButtonSection
+                .padding()
         }
         .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.outputMessage != nil)
     }
@@ -149,7 +141,7 @@ struct ContentView: View {
                 }
             }
             .padding()
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
         }
         .frame(maxWidth: .infinity)
     }
@@ -193,7 +185,7 @@ struct ContentView: View {
             .padding(10)
         }
         .frame(maxHeight: 180)
-        .background(.quaternary, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
     }
     
     private var fileListViewCompact: some View {
@@ -233,7 +225,7 @@ struct ContentView: View {
                 .padding(.bottom, 8)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.quaternary, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
     }
     
     private var commandPreviewSection: some View {
@@ -247,22 +239,136 @@ struct ContentView: View {
                     pasteboard.clearContents()
                     pasteboard.setString(viewModel.commandPreview, forType: .string)
                 } label: {
-                    Label("复制", systemImage: "doc.on.doc")
+                    Label("复制全部", systemImage: "doc.on.doc")
                 }
                 .buttonStyle(.bordered)
                 .disabled(viewModel.inputFilePaths.isEmpty)
             }
             
-            ScrollView(.horizontal) {
-                Text(viewModel.commandPreview)
+            if viewModel.parsedCommandParts.isEmpty {
+                Text("请先选择输入文件")
                     .font(.system(.caption, design: .monospaced))
-                    .foregroundStyle(.secondary)
-                    .padding()
+                    .foregroundStyle(.tertiary)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+            } else {
+                commandPartsView
             }
-            .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .frame(maxWidth: .infinity)
+    }
+    
+    private var commandPartsView: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            commandSectionView(
+                title: "可执行文件",
+                icon: "terminal",
+                parts: viewModel.parsedCommandParts.filter { $0.type == .executable }
+            )
+            
+            Divider()
+                .padding(.vertical, 4)
+            
+            commandSectionView(
+                title: "源文件路径",
+                icon: "doc",
+                parts: viewModel.parsedCommandParts.filter { $0.type == .sourcePath }
+            )
+            
+            Divider()
+                .padding(.vertical, 4)
+            
+            commandSectionView(
+                title: "输出路径",
+                icon: "folder",
+                parts: viewModel.parsedCommandParts.filter { $0.type == .outputPath }
+            )
+            
+            Divider()
+                .padding(.vertical, 4)
+            
+            commandSectionView(
+                title: "参数",
+                icon: "slider.horizontal.3",
+                parts: viewModel.parsedCommandParts.filter { $0.type == .parameterFlag || $0.type == .parameterValue }
+            )
+        }
+        .padding()
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 8))
+    }
+    
+    private func commandSectionView(title: String, icon: String, parts: [HDRConverterViewModel.CommandPart]) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Label(title, systemImage: icon)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                
+                Spacer()
+                
+                if !parts.isEmpty {
+                    Button {
+                        let content = parts.map { $0.fullContent }.joined(separator: " ")
+                        let pasteboard = NSPasteboard.general
+                        pasteboard.clearContents()
+                        pasteboard.setString(content, forType: .string)
+                    } label: {
+                        Image(systemName: "doc.on.doc")
+                            .font(.caption)
+                    }
+                    .buttonStyle(.plain)
+                    .help("复制此部分")
+                }
+            }
+            
+            if parts.isEmpty {
+                Text("-")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundStyle(.tertiary)
+            } else {
+                HStack(spacing: 4) {
+                    ForEach(parts) { part in
+                        commandPartView(part)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func commandPartView(_ part: HDRConverterViewModel.CommandPart) -> some View {
+        let (color, bgColor) = colorForPartType(part.type)
+        
+        return TooltipView(content: part.fullContent) {
+            Text(part.content)
+                .font(.system(.caption, design: .monospaced))
+                .foregroundStyle(color)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 3)
+                .background(bgColor.opacity(0.15))
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(bgColor.opacity(0.3), lineWidth: 1)
+                )
+        }
+        .onTapGesture {
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.setString(part.fullContent, forType: .string)
+        }
+    }
+    
+    private func colorForPartType(_ type: HDRConverterViewModel.CommandPartType) -> (Color, Color) {
+        switch type {
+        case .executable:
+            return (.purple, .purple)
+        case .sourcePath, .outputPath:
+            return (.green, .green)
+        case .parameterFlag:
+            return (.blue, .blue)
+        case .parameterValue:
+            return (.orange, .orange)
+        }
     }
     
     private var outputSettingsSection: some View {
@@ -320,7 +426,7 @@ struct ContentView: View {
                 }
             }
             .padding()
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
         }
         .frame(maxWidth: .infinity)
     }
@@ -409,7 +515,7 @@ struct ContentView: View {
                 }
             }
             .padding()
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
         }
         .frame(maxWidth: .infinity)
     }
@@ -452,7 +558,7 @@ struct ContentView: View {
         }
         .padding()
         .background(viewModel.isSuccess ? Color.green.opacity(0.1) : Color.red.opacity(0.1),
-                   in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                   in: RoundedRectangle(cornerRadius: 10))
     }
     
     private var conversionProgressView: some View {
@@ -491,7 +597,7 @@ struct ContentView: View {
                 }
             }
             .padding()
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
             
             VStack(spacing: 16) {
                 Toggle("显示日志", isOn: $viewModel.showLogs)
@@ -520,7 +626,7 @@ struct ContentView: View {
                     .padding(8)
                 }
                 .frame(height: 180)
-                .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .background(.quaternary, in: RoundedRectangle(cornerRadius: 8))
                 .transition(.asymmetric(
                     insertion: .move(edge: .bottom).combined(with: .opacity).combined(with: .scale(scale: 0.95)),
                     removal: .move(edge: .bottom).combined(with: .opacity).combined(with: .scale(scale: 0.95))
@@ -540,5 +646,33 @@ struct ContentView: View {
             let seconds = Int(time.truncatingRemainder(dividingBy: 60))
             return "剩余 \(minutes) 分 \(seconds) 秒"
         }
+    }
+}
+
+struct TooltipView<Content: View>: View {
+    let content: String
+    @ViewBuilder let child: Content
+    @State private var isHovering: Bool = false
+    
+    init(content: String, @ViewBuilder child: () -> Content) {
+        self.content = content
+        self.child = child()
+    }
+    
+    var body: some View {
+        child
+            .onHover { hovering in
+                isHovering = hovering
+            }
+            .popover(isPresented: $isHovering, arrowEdge: .bottom) {
+                ScrollView(.vertical) {
+                    Text(content)
+                        .font(.system(.caption, design: .monospaced))
+                        .textSelection(.enabled)
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(minWidth: 300, idealWidth: 400, maxWidth: 500, maxHeight: 200)
+            }
     }
 }

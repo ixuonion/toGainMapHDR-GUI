@@ -128,6 +128,68 @@ class HDRConverterViewModel: ObservableObject {
         return executablePath + " " + args.joined(separator: " ")
     }
     
+    struct CommandPart: Identifiable {
+        let id = UUID()
+        let type: CommandPartType
+        let content: String
+        let fullContent: String
+    }
+    
+    enum CommandPartType {
+        case executable
+        case sourcePath
+        case outputPath
+        case parameterFlag
+        case parameterValue
+    }
+    
+    var parsedCommandParts: [CommandPart] {
+        guard let sampleFile = inputFilePaths.first else {
+            return []
+        }
+        
+        var parts: [CommandPart] = []
+        
+        parts.append(CommandPart(type: .executable, content: "toGainMapHDR", fullContent: executablePath))
+        
+        parts.append(CommandPart(type: .sourcePath, content: abbreviatePath(sampleFile), fullContent: sampleFile))
+        
+        parts.append(CommandPart(type: .outputPath, content: abbreviatePath(outputDirectory), fullContent: outputDirectory))
+        
+        let args = buildArguments(for: sampleFile)
+        var i = 2
+        
+        while i < args.count {
+            let arg = args[i]
+            if arg.starts(with: "-") {
+                parts.append(CommandPart(type: .parameterFlag, content: arg, fullContent: arg))
+                i += 1
+                if i < args.count && !args[i].starts(with: "-") {
+                    let valueArg = args[i]
+                    parts.append(CommandPart(type: .parameterValue, content: valueArg, fullContent: valueArg))
+                    i += 1
+                }
+            } else {
+                i += 1
+            }
+        }
+        
+        return parts
+    }
+    
+    private func abbreviatePath(_ path: String) -> String {
+        let url = URL(fileURLWithPath: path)
+        let components = url.pathComponents
+        
+        guard components.count > 5 else {
+            return path
+        }
+        
+        let first = components[1]
+        let last = components.suffix(3).joined(separator: "/")
+        return "/\(first)/.../\(last)"
+    }
+    
     func selectInputFiles() {
         let panel = NSOpenPanel()
         panel.canChooseFiles = true
