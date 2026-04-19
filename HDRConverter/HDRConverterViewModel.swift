@@ -56,16 +56,15 @@ class HDRConverterViewModel: ObservableObject {
         case ten = 10
     }
     
-    private let executablePath: String
+    let executablePath: String
     
     init() {
         let bundlePath = Bundle.main.bundlePath
         let possiblePaths = [
-            "/Users/bytedance/toGainMapHDR/bin/toGainMapHDR",
             "\(bundlePath)/Contents/MacOS/toGainMapHDR",
             "\(bundlePath)/Contents/Resources/toGainMapHDR",
-            "\(bundlePath)/toGainMapHDR",
-            "\(Bundle.main.resourcePath ?? "")/toGainMapHDR"
+            "\(Bundle.main.resourcePath ?? "")/toGainMapHDR",
+            "/Users/bytedance/toGainMapHDR/bin/toGainMapHDR"
         ]
         
         self.executablePath = possiblePaths.first { FileManager.default.fileExists(atPath: $0) } ?? ""

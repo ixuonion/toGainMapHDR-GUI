@@ -12,6 +12,8 @@
 		F2005 /* HDRConverterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2006 /* HDRConverterViewModel.swift */; };
 		F2007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F2008 /* Assets.xcassets */; };
 		F2009 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F200A /* Preview Assets.xcassets */; };
+		F201E /* toGainMapHDR in Resources */ = {isa = PBXBuildFile; fileRef = F201C /* toGainMapHDR */; };
+		F201F /* GainMapKernel.ci.metallib in Resources */ = {isa = PBXBuildFile; fileRef = F201D /* GainMapKernel.ci.metallib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +23,8 @@
 		F2008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F200A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F200B /* HDRConverter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HDRConverter.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F201C /* toGainMapHDR */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = toGainMapHDR; sourceTree = "<group>"; };
+		F201D /* GainMapKernel.ci.metallib */ = {isa = PBXFileReference; lastKnownFileType = file; path = GainMapKernel.ci.metallib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +43,8 @@
 			children = (
 				F2010 /* HDRConverter */,
 				F2013 /* Products */,
+				F201C /* toGainMapHDR */,
+				F201D /* GainMapKernel.ci.metallib */,
 			);
 			sourceTree = "<group>";
 		};
@@ -122,6 +128,8 @@
 			files = (
 				F2009 /* Preview Assets.xcassets in Resources */,
 				F2007 /* Assets.xcassets in Resources */,
+				F201E /* toGainMapHDR in Resources */,
+				F201F /* GainMapKernel.ci.metallib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

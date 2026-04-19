@@ -242,10 +242,17 @@ struct ContentView: View {
                     Label("复制全部", systemImage: "doc.on.doc")
                 }
                 .buttonStyle(.bordered)
-                .disabled(viewModel.inputFilePaths.isEmpty)
+                .disabled(viewModel.inputFilePaths.isEmpty || viewModel.executablePath.isEmpty)
             }
             
-            if viewModel.parsedCommandParts.isEmpty {
+            if viewModel.executablePath.isEmpty {
+                Text("错误：未找到 toGainMapHDR 可执行文件")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color.red.opacity(0.1), in: RoundedRectangle(cornerRadius: 8))
+            } else if viewModel.parsedCommandParts.isEmpty {
                 Text("请先选择输入文件")
                     .font(.system(.caption, design: .monospaced))
                     .foregroundStyle(.tertiary)
