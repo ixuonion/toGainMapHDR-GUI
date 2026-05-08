@@ -14,6 +14,7 @@
 		F2009 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F200A /* Preview Assets.xcassets */; };
 		F201E /* toGainMapHDR in Resources */ = {isa = PBXBuildFile; fileRef = F201C /* toGainMapHDR */; };
 		F201F /* GainMapKernel.ci.metallib in Resources */ = {isa = PBXBuildFile; fileRef = F201D /* GainMapKernel.ci.metallib */; };
+		F2020 /* RGBGainMapKernel.ci.metallib in Resources */ = {isa = PBXBuildFile; fileRef = F2021 /* RGBGainMapKernel.ci.metallib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		F200B /* HDRConverter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HDRConverter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F201C /* toGainMapHDR */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = toGainMapHDR; sourceTree = "<group>"; };
 		F201D /* GainMapKernel.ci.metallib */ = {isa = PBXFileReference; lastKnownFileType = file; path = GainMapKernel.ci.metallib; sourceTree = "<group>"; };
+		F2021 /* RGBGainMapKernel.ci.metallib */ = {isa = PBXFileReference; lastKnownFileType = file; path = RGBGainMapKernel.ci.metallib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +47,7 @@
 				F2013 /* Products */,
 				F201C /* toGainMapHDR */,
 				F201D /* GainMapKernel.ci.metallib */,
+				F2021 /* RGBGainMapKernel.ci.metallib */,
 			);
 			sourceTree = "<group>";
 		};
@@ -130,6 +133,7 @@
 				F2007 /* Assets.xcassets in Resources */,
 				F201E /* toGainMapHDR in Resources */,
 				F201F /* GainMapKernel.ci.metallib in Resources */,
+				F2020 /* RGBGainMapKernel.ci.metallib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

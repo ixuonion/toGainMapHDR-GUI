@@ -15,6 +15,7 @@ class HDRConverterViewModel: ObservableObject {
     @Published var colorSpace: ColorSpace = .p3
     @Published var bitDepth: BitDepth = .eight
     @Published var toneMappingRatio: Double = 3.0
+    @Published var maxHeadroom: Double = 6.0
     @Published var gainMapScaling: Double = 1.0
     @Published var monochrome: Bool = false
     @Published var isConverting: Bool = false
@@ -57,23 +58,17 @@ class HDRConverterViewModel: ObservableObject {
     }
     
     let executablePath: String
+    let runtimeStatus: RuntimeStatus
     
     init() {
-        let bundlePath = Bundle.main.bundlePath
-        let possiblePaths = [
-            "\(bundlePath)/Contents/MacOS/toGainMapHDR",
-            "\(bundlePath)/Contents/Resources/toGainMapHDR",
-            "\(Bundle.main.resourcePath ?? "")/toGainMapHDR",
-            "/Users/bytedance/toGainMapHDR/bin/toGainMapHDR"
-        ]
-        
-        self.executablePath = possiblePaths.first { FileManager.default.fileExists(atPath: $0) } ?? ""
+        self.runtimeStatus = RuntimeStatus.detect()
+        self.executablePath = runtimeStatus.executablePath ?? ""
         // 初始化派生值
         updateDerivedValues()
     }
     
     var canConvert: Bool {
-        !inputFilePaths.isEmpty && !outputDirectory.isEmpty && !executablePath.isEmpty
+        !inputFilePaths.isEmpty && !outputDirectory.isEmpty && runtimeStatus.isReady
     }
     
     @Published private(set) var shouldDisableJpegOption: Bool = false
@@ -233,6 +228,9 @@ class HDRConverterViewModel: ObservableObject {
         
         arguments.append("-r")
         arguments.append(String(format: "%.1f", toneMappingRatio))
+
+        arguments.append("-R")
+        arguments.append(String(format: "%.1f", maxHeadroom))
         
         arguments.append("-c")
         arguments.append(colorSpace.rawValue)
@@ -417,6 +415,63 @@ class HDRConverterViewModel: ObservableObject {
     private func addLog(_ message: String) {
         let timestamp = DateFormatter.logFormatter.string(from: Date())
         logs.append("[\(timestamp)] \(message)")
+    }
+}
+
+struct RuntimeStatus {
+    let executablePath: String?
+    let missingResources: [String]
+
+    var isReady: Bool {
+        executablePath != nil && missingResources.isEmpty
+    }
+
+    var message: String {
+        if isReady {
+            return "运行时依赖已就绪"
+        }
+
+        var issues: [String] = []
+        if executablePath == nil {
+            issues.append("toGainMapHDR 可执行文件")
+        }
+        issues.append(contentsOf: missingResources)
+        return "缺少运行时依赖：" + issues.joined(separator: "、")
+    }
+
+    static func detect(fileManager: FileManager = .default, bundle: Bundle = .main) -> RuntimeStatus {
+        let bundlePath = bundle.bundlePath
+        let resourcePath = bundle.resourcePath ?? ""
+        let macOSPath = "\(bundlePath)/Contents/MacOS"
+
+        let executableCandidates = [
+            "\(macOSPath)/toGainMapHDR",
+            "\(resourcePath)/toGainMapHDR",
+            "\(fileManager.currentDirectoryPath)/toGainMapHDR"
+        ]
+
+        let executablePath = executableCandidates.first {
+            fileManager.isExecutableFile(atPath: $0)
+        }
+
+        let requiredResources = [
+            "GainMapKernel.ci.metallib",
+            "RGBGainMapKernel.ci.metallib"
+        ]
+
+        let searchDirectories = [
+            macOSPath,
+            resourcePath,
+            fileManager.currentDirectoryPath
+        ].filter { !$0.isEmpty }
+
+        let missingResources = requiredResources.filter { resource in
+            !searchDirectories.contains { directory in
+                fileManager.fileExists(atPath: "\(directory)/\(resource)")
+            }
+        }
+
+        return RuntimeStatus(executablePath: executablePath, missingResources: missingResources)
     }
 }
 

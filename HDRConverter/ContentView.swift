@@ -25,6 +25,7 @@ struct ContentView: View {
                 
                 ScrollView {
                     VStack(spacing: 20) {
+                        runtimeStatusSection
                         fileSelectionSection
                         commandPreviewSection
                         outputSettingsSection
@@ -145,6 +146,28 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity)
     }
+
+    private var runtimeStatusSection: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: viewModel.runtimeStatus.isReady ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
+                .font(.title3)
+                .foregroundStyle(viewModel.runtimeStatus.isReady ? .green : .orange)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("运行时依赖")
+                    .font(.headline)
+                Text(viewModel.runtimeStatus.message)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .textSelection(.enabled)
+            }
+
+            Spacer()
+        }
+        .padding()
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10))
+        .accessibilityElement(children: .combine)
+    }
     
     private var fileListViewDetailed: some View {
         ScrollView {
@@ -246,7 +269,7 @@ struct ContentView: View {
             }
             
             if viewModel.executablePath.isEmpty {
-                Text("错误：未找到 toGainMapHDR 可执行文件")
+                Text(viewModel.runtimeStatus.message)
                     .font(.system(.caption, design: .monospaced))
                     .foregroundStyle(.red)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -488,6 +511,24 @@ struct ContentView: View {
                         Spacer()
                     }
                 }
+
+                Divider()
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("最大 Headroom")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    HStack {
+                        Slider(value: $viewModel.maxHeadroom, in: 1.0...12.0, step: 0.5)
+                        Text(String(format: "%.1f", viewModel.maxHeadroom))
+                            .frame(width: 45, alignment: .trailing)
+                            .monospacedDigit()
+                        Text("(对应上游 -R 参数)")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                        Spacer()
+                    }
+                }
                 
                 if viewModel.outputFormat == .appleGainMap {
                     Divider()
@@ -496,13 +537,15 @@ struct ContentView: View {
                         Text("Gain Map 缩放")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                        HStack(spacing: 12) {
-                            Slider(value: $viewModel.gainMapScaling, in: 1.0...2.0, step: 0.1)
-                            Text(String(format: "%.1f", viewModel.gainMapScaling))
-                                .frame(width: 45, alignment: .trailing)
-                                .monospacedDigit()
-                                .contentTransition(.numericText())
+                        Picker("", selection: $viewModel.gainMapScaling) {
+                            Text("完整尺寸").tag(1.0)
+                            Text("半尺寸").tag(2.0)
                         }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                        Text("上游当前仅支持 1 或 2；半尺寸会减小文件体积，但奇数尺寸图像会裁剪 1 像素。")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
                     }
                     .transition(.asymmetric(
                         insertion: .move(edge: .top).combined(with: .opacity).combined(with: .scale(scale: 0.9)),

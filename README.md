@@ -17,8 +17,10 @@
   - 色彩空间选择（sRGB/P3/Rec.2020）
   - 位深度设置（8-bit/10-bit）
   - SDR 映射比例调整
+  - 最大 Headroom 限制（对应上游 `-R` 参数）
   - Gain Map 缩放（Apple Gain Map 格式）
   - 单色 Gain Map 选项（ISO Gain Map 格式）
+- **运行时依赖检查**：启动后检查 CLI 和 Metal 内核资源是否完整
 - **支持多种输入格式**：TIFF、PNG、HEIC、AVIF、JPEG、JXL、EXR、HDR 等
 - **输出格式选择**：HEIC 或 JPEG
 - **命令行预览**：实时查看当前配置生成的命令行
@@ -87,10 +89,30 @@ HDRConverter/
 │   ├── HDRConverterViewModel.swift # 业务逻辑和数据模型
 │   └── Assets.xcassets/          # 资源文件
 ├── HDRConverter.xcodeproj/       # Xcode 项目文件
-├── toGainMapHDR                  # 原始可执行文件
-├── GainMapKernel.ci.metallib     # Metal 内核库
+├── Vendor/toGainMapHDR/          # 上游核心源码快照
+├── toGainMapHDR                  # 上游最新可执行文件
+├── GainMapKernel.ci.metallib     # Apple Gain Map Metal 内核库
+├── RGBGainMapKernel.ci.metallib  # RGB Gain Map Metal 内核库
+├── docs/                         # 合并、打包和 HIG 对照文档
+├── tests/                        # 自动化运行时检查脚本
 └── README.md                      # 本说明文件
 ```
+
+## 打包
+
+使用自动化脚本生成可独立运行的 `.app`：
+
+```bash
+./package.sh Release
+```
+
+输出位置：
+
+```text
+build/Export/HDRConverter.app
+```
+
+打包配置详见 `docs/PACKAGING.md`。
 
 ## 关于 toGainMapHDR
 
@@ -101,13 +123,23 @@ HDRConverter/
 ## 注意事项
 
 1. **可执行文件路径**：应用程序会自动在以下位置查找 toGainMapHDR 可执行文件：
-   - `/Users/bytedance/toGainMapHDR/bin/toGainMapHDR`
-   - 应用程序包内的 Contents/MacOS/ 目录
-   - 应用程序根目录
+   - 应用程序包内的 `Contents/MacOS/` 目录
+   - 应用程序包内的 `Contents/Resources/` 目录
+   - 当前工作目录
 
-2. **沙盒权限**：默认情况下应用程序启用了 App Sandbox，您可能需要在 Xcode 中根据需要调整权限设置。
+2. **沙盒权限**：当前工程未启用 App Sandbox，便于 CLI 访问用户选择的输入和输出路径；如需上架分发，请重新评估沙盒与安全范围书签策略。
 
-3. **金属库**：确保 `GainMapKernel.ci.metallib` 文件与应用程序在同一目录下，或正确放置在应用程序包内。
+3. **金属库**：确保 `GainMapKernel.ci.metallib` 和 `RGBGainMapKernel.ci.metallib` 与应用程序在同一目录下，或正确放置在应用程序包内。
+
+4. **上游系统要求**：上游核心工具 README 建议 macOS 26.0+，较低系统版本可能能启动 GUI，但转换功能取决于系统 Core Image HDR API 支持情况。
+
+## 交付文档
+
+- `docs/UPSTREAM_CHANGELOG.md`：上游核心变更日志
+- `docs/MERGE_NOTES.md`：代码合并说明
+- `docs/PACKAGING.md`：打包配置说明
+- `docs/HIG_AUDIT.md`：macOS Human Interface Guidelines 对照记录
+- `screenshots/README.md`：GUI 优化前后截图生成说明
 
 ## 许可证
 
