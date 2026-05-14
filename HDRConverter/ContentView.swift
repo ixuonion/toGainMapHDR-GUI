@@ -589,26 +589,7 @@ struct ContentView: View {
                     .labelsHidden()
                 }
                 
-                if viewModel.batchConcurrencyMode == .auto {
-                    Divider()
-                        .transition(.opacity)
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("性能偏好")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Picker("", selection: $viewModel.performancePreference) {
-                            Text("节能").tag(HDRConverterViewModel.PerformancePreference.efficient)
-                            Text("均衡").tag(HDRConverterViewModel.PerformancePreference.balanced)
-                            Text("极速").tag(HDRConverterViewModel.PerformancePreference.maxPerformance)
-                        }
-                        .pickerStyle(.segmented)
-                        .labelsHidden()
-                    }
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .top).combined(with: .opacity),
-                        removal: .move(edge: .top).combined(with: .opacity)
-                    ))
-                } else {
+                if viewModel.batchConcurrencyMode == .manual {
                     Divider()
                         .transition(.opacity)
                     VStack(alignment: .leading, spacing: 8) {
@@ -616,11 +597,11 @@ struct ContentView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                         HStack {
-                            Stepper(value: $viewModel.manualConcurrentJobs, in: 1...8) {
+                            Stepper(value: $viewModel.manualConcurrentJobs, in: 1...40) {
                                 Text("\(viewModel.manualConcurrentJobs) 个文件")
                             }
                             Spacer()
-                            Text("范围 1-8")
+                            Text("范围 1-40")
                                 .font(.caption)
                                 .foregroundStyle(.tertiary)
                         }

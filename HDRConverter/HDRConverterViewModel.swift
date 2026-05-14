@@ -4,6 +4,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
+    private static let maxSupportedConcurrentJobs = 40
     @Published var inputFilePaths: [String] = [] {
         didSet {
             updateEffectiveConcurrentJobs()
@@ -44,7 +45,7 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
     }
     @Published var manualConcurrentJobs: Int = 4 {
         didSet {
-            let clamped = max(1, min(8, manualConcurrentJobs))
+            let clamped = max(1, min(Self.maxSupportedConcurrentJobs, manualConcurrentJobs))
             if clamped != manualConcurrentJobs {
                 manualConcurrentJobs = clamped
                 return
@@ -268,20 +269,13 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
     }
     
     var concurrencyExplanation: String {
-        let modeText = batchConcurrencyMode == .auto ? "自动模式会按当前硬件与文件数量估算并发。" : "手动模式直接限制同时处理的文件数。"
+        let modeText = batchConcurrencyMode == .auto ? "自动模式会直接使用 CPU 核心数作为并发数。" : "手动模式直接限制同时处理的文件数。"
         let riskText: String
         switch batchConcurrencyMode {
         case .manual:
             riskText = manualConcurrentJobs >= 6 ? "较高并发会增加功耗、内存压力，并且未必继续提速。" : "建议先从 2-4 并发开始观察吞吐和温度。"
         case .auto:
-            switch performancePreference {
-            case .efficient:
-                riskText = "节能模式更适合长时间批处理或需要控制温度的场景。"
-            case .balanced:
-                riskText = "均衡模式是默认推荐值，优先兼顾吞吐、稳定性和交互体验。"
-            case .maxPerformance:
-                riskText = "极速模式会提高并发，但收益可能因 GPU、编码器和内存带宽竞争而递减。"
-            }
+            riskText = "当前会忽略保守推荐逻辑，直接拉满到 CPU 核心数；文件数不足时则以文件数为准。"
         }
         return modeText + riskText
     }
@@ -343,46 +337,21 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
     private func updateEffectiveConcurrentJobs() {
         let fileCount = inputFilePaths.count
         let concurrentJobs: Int
+        let upperBound: Int
         switch batchConcurrencyMode {
         case .manual:
             concurrentJobs = manualConcurrentJobs
+            upperBound = max(1, min(fileCount, Self.maxSupportedConcurrentJobs))
         case .auto:
             concurrentJobs = recommendedConcurrentJobs(for: fileCount)
+            upperBound = max(1, fileCount)
         }
-        effectiveConcurrentJobs = min(max(1, concurrentJobs), max(1, fileCount))
+        effectiveConcurrentJobs = min(max(1, concurrentJobs), upperBound)
     }
     
     func recommendedConcurrentJobs(for fileCount: Int) -> Int {
         guard fileCount > 1 else { return 1 }
-        
-        if isAppleSilicon, processInfo.processorCount >= 16 {
-            switch performancePreference {
-            case .efficient:
-                return 2
-            case .balanced:
-                return 4
-            case .maxPerformance:
-                return 6
-            }
-        }
-        
-        if isAppleSilicon {
-            switch performancePreference {
-            case .efficient:
-                return min(max(1, processInfo.activeProcessorCount / 6), 2)
-            case .balanced:
-                return min(max(2, processInfo.activeProcessorCount / 4), 4)
-            case .maxPerformance:
-                return min(max(3, processInfo.activeProcessorCount / 3), 6)
-            }
-        }
-        
-        switch performancePreference {
-        case .efficient, .balanced:
-            return 1
-        case .maxPerformance:
-            return 2
-        }
+        return max(1, processInfo.processorCount)
     }
     
     private func abbreviatePath(_ path: String) -> String {
