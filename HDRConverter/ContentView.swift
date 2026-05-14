@@ -30,6 +30,7 @@ struct ContentView: View {
                         commandPreviewSection
                         outputSettingsSection
                         advancedSettingsSection
+                        batchPerformanceSection
                     }
                     .padding()
                     .frame(maxWidth: .infinity)
@@ -570,6 +571,110 @@ struct ContentView: View {
         .frame(maxWidth: .infinity)
     }
     
+    private var batchPerformanceSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("批量性能")
+                .font(.headline)
+            
+            VStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("并发模式")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Picker("", selection: $viewModel.batchConcurrencyMode) {
+                        Text("自动（推荐）").tag(HDRConverterViewModel.BatchConcurrencyMode.auto)
+                        Text("手动").tag(HDRConverterViewModel.BatchConcurrencyMode.manual)
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                }
+                
+                if viewModel.batchConcurrencyMode == .auto {
+                    Divider()
+                        .transition(.opacity)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("性能偏好")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Picker("", selection: $viewModel.performancePreference) {
+                            Text("节能").tag(HDRConverterViewModel.PerformancePreference.efficient)
+                            Text("均衡").tag(HDRConverterViewModel.PerformancePreference.balanced)
+                            Text("极速").tag(HDRConverterViewModel.PerformancePreference.maxPerformance)
+                        }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                    }
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .top).combined(with: .opacity),
+                        removal: .move(edge: .top).combined(with: .opacity)
+                    ))
+                } else {
+                    Divider()
+                        .transition(.opacity)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("并发任务数")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        HStack {
+                            Stepper(value: $viewModel.manualConcurrentJobs, in: 1...8) {
+                                Text("\(viewModel.manualConcurrentJobs) 个文件")
+                            }
+                            Spacer()
+                            Text("范围 1-8")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .top).combined(with: .opacity),
+                        removal: .move(edge: .top).combined(with: .opacity)
+                    ))
+                }
+                
+                Divider()
+                
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        Text("当前生效并发")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("\(viewModel.effectiveConcurrentJobs) 个文件")
+                            .font(.subheadline.weight(.semibold))
+                            .monospacedDigit()
+                    }
+                    
+                    Text("这里控制的是同时处理的文件数，不是上游 CLI 内部线程数。")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                    
+                    Text(viewModel.concurrencyExplanation)
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                    
+                    Text("硬件信息：\(viewModel.hardwareSummary)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    
+                    if viewModel.isIntelHardware {
+                        Text("Intel 设备默认更保守，优先保证兼容性与稳定性。")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
+                    
+                    if viewModel.isConverting {
+                        Text(viewModel.queueStatusMessage)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                    }
+                }
+            }
+            .padding()
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
+        }
+        .frame(maxWidth: .infinity)
+    }
+    
     private var convertButtonSection: some View {
         Button(action: {
             withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
@@ -645,6 +750,12 @@ struct ContentView: View {
                             .transition(.opacity)
                     }
                 }
+                
+                Text(viewModel.queueStatusMessage)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .monospacedDigit()
             }
             .padding()
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))

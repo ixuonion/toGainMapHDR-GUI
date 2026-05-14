@@ -1,9 +1,14 @@
+import Darwin
 import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
 
-class HDRConverterViewModel: ObservableObject {
-    @Published var inputFilePaths: [String] = []
+final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
+    @Published var inputFilePaths: [String] = [] {
+        didSet {
+            updateEffectiveConcurrentJobs()
+        }
+    }
     @Published var outputDirectory: String = ""
     @Published var outputFormat: OutputFormat = .isoGainMap {
         didSet {
@@ -27,13 +32,53 @@ class HDRConverterViewModel: ObservableObject {
     @Published var logs: [String] = []
     @Published var showLogs: Bool = false
     @Published var convertedFiles: [String] = []
+    @Published var batchConcurrencyMode: BatchConcurrencyMode = .auto {
+        didSet {
+            updateEffectiveConcurrentJobs()
+        }
+    }
+    @Published var performancePreference: PerformancePreference = .balanced {
+        didSet {
+            updateEffectiveConcurrentJobs()
+        }
+    }
+    @Published var manualConcurrentJobs: Int = 4 {
+        didSet {
+            let clamped = max(1, min(8, manualConcurrentJobs))
+            if clamped != manualConcurrentJobs {
+                manualConcurrentJobs = clamped
+                return
+            }
+            updateEffectiveConcurrentJobs()
+        }
+    }
+    @Published private(set) var effectiveConcurrentJobs: Int = 1
+    @Published private(set) var hardwareSummary: String = ""
+    @Published private(set) var queueStatusMessage: String = "等待开始"
+    @Published private(set) var shouldDisableJpegOption: Bool = false
     
-    private var currentTask: Process?
     private var startTime: Date?
     private var fileConversionTimes: [TimeInterval] = []
     private let fileManager = FileManager.default
+    private let processInfo = ProcessInfo.processInfo
+    private let runningTasksLock = NSLock()
+    private let cancellationLock = NSLock()
+    private var runningTasks: [UUID: Process] = [:]
+    private var _cancelRequested = false
+    private var cancelRequested: Bool {
+        get {
+            cancellationLock.lock()
+            defer { cancellationLock.unlock() }
+            return _cancelRequested
+        }
+        set {
+            cancellationLock.lock()
+            _cancelRequested = newValue
+            cancellationLock.unlock()
+        }
+    }
     
-    enum OutputFormat: String, CaseIterable {
+    enum OutputFormat: String, CaseIterable, Sendable {
         case isoGainMap = "ISO Gain Map"
         case appleGainMap = "Apple Gain Map"
         case pqHDR = "PQ HDR"
@@ -41,50 +86,166 @@ class HDRConverterViewModel: ObservableObject {
         case sdr = "SDR"
     }
     
-    enum FileFormat: String, CaseIterable {
+    enum FileFormat: String, CaseIterable, Sendable {
         case heic = "HEIC"
         case jpg = "JPEG"
     }
     
-    enum ColorSpace: String, CaseIterable {
+    enum ColorSpace: String, CaseIterable, Sendable {
         case srgb = "srgb"
         case p3 = "p3"
         case rec2020 = "rec2020"
     }
     
-    enum BitDepth: Int, CaseIterable {
+    enum BitDepth: Int, CaseIterable, Sendable {
         case eight = 8
         case ten = 10
+    }
+    
+    enum BatchConcurrencyMode: String, CaseIterable, Sendable {
+        case auto = "自动"
+        case manual = "手动"
+    }
+    
+    enum PerformancePreference: String, CaseIterable, Sendable {
+        case efficient = "节能"
+        case balanced = "均衡"
+        case maxPerformance = "极速"
+    }
+    
+    struct CommandPart: Identifiable {
+        let id = UUID()
+        let type: CommandPartType
+        let content: String
+        let fullContent: String
+    }
+    
+    enum CommandPartType {
+        case executable
+        case sourcePath
+        case outputPath
+        case parameterFlag
+        case parameterValue
+    }
+    
+    private struct ConversionSettings: Sendable {
+        let outputDirectory: String
+        let outputFormat: OutputFormat
+        let fileFormat: FileFormat
+        let quality: Double
+        let colorSpace: ColorSpace
+        let bitDepth: BitDepth
+        let toneMappingRatio: Double
+        let maxHeadroom: Double
+        let gainMapScaling: Double
+        let monochrome: Bool
+        
+        func buildArguments(for filePath: String) -> [String] {
+            var arguments: [String] = [filePath, outputDirectory]
+            
+            arguments.append("-q")
+            arguments.append(String(format: "%.2f", quality))
+            
+            arguments.append("-r")
+            arguments.append(String(format: "%.1f", toneMappingRatio))
+            
+            arguments.append("-R")
+            arguments.append(String(format: "%.1f", maxHeadroom))
+            
+            arguments.append("-c")
+            arguments.append(colorSpace.rawValue)
+            
+            arguments.append("-d")
+            arguments.append(String(bitDepth.rawValue))
+            
+            if fileFormat == .jpg {
+                arguments.append("-j")
+            }
+            
+            switch outputFormat {
+            case .isoGainMap:
+                if monochrome {
+                    arguments.append("-m")
+                }
+            case .appleGainMap:
+                arguments.append("-g")
+                arguments.append("-H")
+                arguments.append(String(format: "%.1f", gainMapScaling))
+            case .pqHDR:
+                arguments.append("-p")
+            case .hlgHDR:
+                arguments.append("-h")
+            case .sdr:
+                arguments.append("-s")
+            }
+            
+            return arguments
+        }
+        
+        func outputFilePath(for inputPath: String) -> String {
+            let url = URL(fileURLWithPath: inputPath)
+            let ext = fileFormat == .jpg ? "jpg" : "heic"
+            let outputURL = URL(fileURLWithPath: outputDirectory)
+                .appendingPathComponent(url.deletingPathExtension().lastPathComponent)
+                .appendingPathExtension(ext)
+            return outputURL.path
+        }
+    }
+    
+    private struct ConversionResult: Sendable {
+        let filePath: String
+        let outputPath: String
+        let success: Bool
+        let duration: TimeInterval
+        let output: String?
     }
     
     let executablePath: String
     let runtimeStatus: RuntimeStatus
     
     init() {
-        self.runtimeStatus = RuntimeStatus.detect()
+        let runtimeStatus = RuntimeStatus.detect()
+        self.runtimeStatus = runtimeStatus
         self.executablePath = runtimeStatus.executablePath ?? ""
-        // 初始化派生值
+        self.hardwareSummary = HDRConverterViewModel.makeHardwareSummary(processInfo: ProcessInfo.processInfo)
         updateDerivedValues()
+        updateEffectiveConcurrentJobs()
     }
     
     var canConvert: Bool {
         !inputFilePaths.isEmpty && !outputDirectory.isEmpty && runtimeStatus.isReady
     }
     
-    @Published private(set) var shouldDisableJpegOption: Bool = false
-    
-    private func updateDerivedValues() {
-        // 当 outputFormat 变化时，更新相关的派生属性
-        let newShouldDisableJpeg = outputFormat == .pqHDR || outputFormat == .hlgHDR
-        if newShouldDisableJpeg != shouldDisableJpegOption {
-            DispatchQueue.main.async { [weak self] in
-                self?.shouldDisableJpegOption = newShouldDisableJpeg
-                // 如果禁用了 JPEG 且当前选择了 JPEG，自动切换到 HEIC
-                if newShouldDisableJpeg, self?.fileFormat == .jpg {
-                    self?.fileFormat = .heic
+    var parsedCommandParts: [CommandPart] {
+        guard let sampleFile = inputFilePaths.first else {
+            return []
+        }
+        
+        var parts: [CommandPart] = []
+        
+        parts.append(CommandPart(type: .executable, content: "toGainMapHDR", fullContent: executablePath))
+        parts.append(CommandPart(type: .sourcePath, content: abbreviatePath(sampleFile), fullContent: sampleFile))
+        parts.append(CommandPart(type: .outputPath, content: abbreviatePath(outputDirectory), fullContent: outputDirectory))
+        
+        let args = buildArguments(for: sampleFile)
+        var i = 2
+        
+        while i < args.count {
+            let arg = args[i]
+            if arg.starts(with: "-") {
+                parts.append(CommandPart(type: .parameterFlag, content: arg, fullContent: arg))
+                i += 1
+                if i < args.count && !args[i].starts(with: "-") {
+                    let valueArg = args[i]
+                    parts.append(CommandPart(type: .parameterValue, content: valueArg, fullContent: valueArg))
+                    i += 1
                 }
+            } else {
+                i += 1
             }
         }
+        
+        return parts
     }
     
     var totalFileSize: String {
@@ -100,6 +261,29 @@ class HDRConverterViewModel: ObservableObject {
     
     var hasManyFiles: Bool {
         inputFilePaths.count > 20
+    }
+    
+    var isIntelHardware: Bool {
+        !isAppleSilicon
+    }
+    
+    var concurrencyExplanation: String {
+        let modeText = batchConcurrencyMode == .auto ? "自动模式会按当前硬件与文件数量估算并发。" : "手动模式直接限制同时处理的文件数。"
+        let riskText: String
+        switch batchConcurrencyMode {
+        case .manual:
+            riskText = manualConcurrentJobs >= 6 ? "较高并发会增加功耗、内存压力，并且未必继续提速。" : "建议先从 2-4 并发开始观察吞吐和温度。"
+        case .auto:
+            switch performancePreference {
+            case .efficient:
+                riskText = "节能模式更适合长时间批处理或需要控制温度的场景。"
+            case .balanced:
+                riskText = "均衡模式是默认推荐值，优先兼顾吞吐、稳定性和交互体验。"
+            case .maxPerformance:
+                riskText = "极速模式会提高并发，但收益可能因 GPU、编码器和内存带宽竞争而递减。"
+            }
+        }
+        return modeText + riskText
     }
     
     func getFileExtension(for path: String) -> String {
@@ -122,53 +306,83 @@ class HDRConverterViewModel: ObservableObject {
         return executablePath + " " + args.joined(separator: " ")
     }
     
-    struct CommandPart: Identifiable {
-        let id = UUID()
-        let type: CommandPartType
-        let content: String
-        let fullContent: String
+    private var isAppleSilicon: Bool {
+        Self.isAppleSiliconMachine
     }
     
-    enum CommandPartType {
-        case executable
-        case sourcePath
-        case outputPath
-        case parameterFlag
-        case parameterValue
+    private static var isAppleSiliconMachine: Bool {
+        sysctlIntValue(for: "hw.optional.arm64") == 1
     }
     
-    var parsedCommandParts: [CommandPart] {
-        guard let sampleFile = inputFilePaths.first else {
-            return []
+    private static func sysctlIntValue(for name: String) -> Int {
+        var value: Int32 = 0
+        var size = MemoryLayout<Int32>.size
+        let result = name.withCString { cString in
+            sysctlbyname(cString, &value, &size, nil, 0)
         }
-        
-        var parts: [CommandPart] = []
-        
-        parts.append(CommandPart(type: .executable, content: "toGainMapHDR", fullContent: executablePath))
-        
-        parts.append(CommandPart(type: .sourcePath, content: abbreviatePath(sampleFile), fullContent: sampleFile))
-        
-        parts.append(CommandPart(type: .outputPath, content: abbreviatePath(outputDirectory), fullContent: outputDirectory))
-        
-        let args = buildArguments(for: sampleFile)
-        var i = 2
-        
-        while i < args.count {
-            let arg = args[i]
-            if arg.starts(with: "-") {
-                parts.append(CommandPart(type: .parameterFlag, content: arg, fullContent: arg))
-                i += 1
-                if i < args.count && !args[i].starts(with: "-") {
-                    let valueArg = args[i]
-                    parts.append(CommandPart(type: .parameterValue, content: valueArg, fullContent: valueArg))
-                    i += 1
+        return result == 0 ? Int(value) : 0
+    }
+    
+    private static func makeHardwareSummary(processInfo: ProcessInfo) -> String {
+        let platform = isAppleSiliconMachine ? "Apple Silicon" : "Intel"
+        return "\(platform) · CPU \(processInfo.processorCount) 核 · 当前可用 \(processInfo.activeProcessorCount) 核"
+    }
+    
+    private func updateDerivedValues() {
+        let newShouldDisableJpeg = outputFormat == .pqHDR || outputFormat == .hlgHDR
+        if newShouldDisableJpeg != shouldDisableJpegOption {
+            DispatchQueue.main.async { [weak self] in
+                self?.shouldDisableJpegOption = newShouldDisableJpeg
+                if newShouldDisableJpeg, self?.fileFormat == .jpg {
+                    self?.fileFormat = .heic
                 }
-            } else {
-                i += 1
+            }
+        }
+    }
+    
+    private func updateEffectiveConcurrentJobs() {
+        let fileCount = inputFilePaths.count
+        let concurrentJobs: Int
+        switch batchConcurrencyMode {
+        case .manual:
+            concurrentJobs = manualConcurrentJobs
+        case .auto:
+            concurrentJobs = recommendedConcurrentJobs(for: fileCount)
+        }
+        effectiveConcurrentJobs = min(max(1, concurrentJobs), max(1, fileCount))
+    }
+    
+    func recommendedConcurrentJobs(for fileCount: Int) -> Int {
+        guard fileCount > 1 else { return 1 }
+        
+        if isAppleSilicon, processInfo.processorCount >= 16 {
+            switch performancePreference {
+            case .efficient:
+                return 2
+            case .balanced:
+                return 4
+            case .maxPerformance:
+                return 6
             }
         }
         
-        return parts
+        if isAppleSilicon {
+            switch performancePreference {
+            case .efficient:
+                return min(max(1, processInfo.activeProcessorCount / 6), 2)
+            case .balanced:
+                return min(max(2, processInfo.activeProcessorCount / 4), 4)
+            case .maxPerformance:
+                return min(max(3, processInfo.activeProcessorCount / 3), 6)
+            }
+        }
+        
+        switch performancePreference {
+        case .efficient, .balanced:
+            return 1
+        case .maxPerformance:
+            return 2
+        }
     }
     
     private func abbreviatePath(_ path: String) -> String {
@@ -221,59 +435,29 @@ class HDRConverterViewModel: ObservableObject {
     }
     
     private func buildArguments(for filePath: String) -> [String] {
-        var arguments: [String] = [filePath, outputDirectory]
-        
-        arguments.append("-q")
-        arguments.append(String(format: "%.2f", quality))
-        
-        arguments.append("-r")
-        arguments.append(String(format: "%.1f", toneMappingRatio))
-
-        arguments.append("-R")
-        arguments.append(String(format: "%.1f", maxHeadroom))
-        
-        arguments.append("-c")
-        arguments.append(colorSpace.rawValue)
-        
-        arguments.append("-d")
-        arguments.append(String(bitDepth.rawValue))
-        
-        if fileFormat == .jpg {
-            arguments.append("-j")
-        }
-        
-        switch outputFormat {
-        case .isoGainMap:
-            if monochrome {
-                arguments.append("-m")
-            }
-        case .appleGainMap:
-            arguments.append("-g")
-            arguments.append("-H")
-            arguments.append(String(format: "%.1f", gainMapScaling))
-        case .pqHDR:
-            arguments.append("-p")
-        case .hlgHDR:
-            arguments.append("-h")
-        case .sdr:
-            arguments.append("-s")
-        }
-        
-        return arguments
+        makeConversionSettings().buildArguments(for: filePath)
     }
     
-    private func getOutputFilePath(for inputPath: String) -> String {
-        let url = URL(fileURLWithPath: inputPath)
-        let ext = fileFormat == .jpg ? "jpg" : "heic"
-        let outputURL = URL(fileURLWithPath: outputDirectory)
-            .appendingPathComponent(url.deletingPathExtension().lastPathComponent)
-            .appendingPathExtension(ext)
-        return outputURL.path
+    private func makeConversionSettings() -> ConversionSettings {
+        ConversionSettings(
+            outputDirectory: outputDirectory,
+            outputFormat: outputFormat,
+            fileFormat: fileFormat,
+            quality: quality,
+            colorSpace: colorSpace,
+            bitDepth: bitDepth,
+            toneMappingRatio: toneMappingRatio,
+            maxHeadroom: maxHeadroom,
+            gainMapScaling: gainMapScaling,
+            monochrome: monochrome
+        )
     }
     
     func convert() {
         guard canConvert else { return }
         
+        updateEffectiveConcurrentJobs()
+        cancelRequested = false
         isConverting = true
         progress = 0
         currentFile = ""
@@ -281,6 +465,7 @@ class HDRConverterViewModel: ObservableObject {
         convertedFiles = []
         fileConversionTimes = []
         startTime = Date()
+        queueStatusMessage = makeQueueStatusMessage(running: 0, total: inputFilePaths.count, completed: 0)
         
         Task {
             await convertFiles()
@@ -288,96 +473,165 @@ class HDRConverterViewModel: ObservableObject {
     }
     
     private func convertFiles() async {
-        let totalFiles = inputFilePaths.count
+        let filePaths = inputFilePaths
+        let totalFiles = filePaths.count
+        let settings = makeConversionSettings()
+        let concurrencyLimit = min(max(1, effectiveConcurrentJobs), totalFiles)
+        var nextIndex = 0
+        var activeCount = 0
+        var completedCount = 0
         
-        for (index, filePath) in inputFilePaths.enumerated() {
-            guard isConverting else { break }
-            
+        func scheduleTask(for filePath: String, group: inout TaskGroup<ConversionResult>) async {
+            activeCount += 1
+            let fileName = URL(fileURLWithPath: filePath).lastPathComponent
             await MainActor.run {
-                currentFile = URL(fileURLWithPath: filePath).lastPathComponent
-                addLog("正在处理: \(currentFile)")
+                self.currentFile = fileName
+                self.addLog("正在处理: \(fileName)")
+                self.queueStatusMessage = self.makeQueueStatusMessage(running: activeCount, total: totalFiles, completed: completedCount)
+            }
+            group.addTask { [self, settings] in
+                await self.convertSingleFile(filePath, settings: settings)
+            }
+        }
+        
+        await withTaskGroup(of: ConversionResult.self) { group in
+            while nextIndex < totalFiles && activeCount < concurrencyLimit {
+                let filePath = filePaths[nextIndex]
+                nextIndex += 1
+                await scheduleTask(for: filePath, group: &group)
             }
             
-            let fileStart = Date()
-            let success = await convertSingleFile(filePath)
-            let fileTime = Date().timeIntervalSince(fileStart)
-            
-            await MainActor.run {
-                if success {
-                    let outputPath = getOutputFilePath(for: filePath)
-                    convertedFiles.append(outputPath)
-                    addLog("✓ 完成: \(currentFile) (\(String(format: "%.1f", fileTime))秒)")
-                    fileConversionTimes.append(fileTime)
-                } else {
-                    addLog("✗ 失败: \(currentFile)")
+            while let result = await group.next() {
+                activeCount = max(activeCount - 1, 0)
+                completedCount += 1
+                
+                await MainActor.run {
+                    self.handleConversionResult(
+                        result,
+                        completedCount: completedCount,
+                        totalFiles: totalFiles,
+                        activeCount: activeCount
+                    )
                 }
                 
-                progress = Double(index + 1) / Double(totalFiles)
-                updateEstimatedTimeRemaining(currentIndex: index, total: totalFiles)
+                while !cancelRequested && nextIndex < totalFiles && activeCount < concurrencyLimit {
+                    let filePath = filePaths[nextIndex]
+                    nextIndex += 1
+                    await scheduleTask(for: filePath, group: &group)
+                }
             }
         }
         
         await MainActor.run {
-            isConverting = false
-            currentFile = ""
+            self.isConverting = false
+            self.currentFile = ""
+            self.queueStatusMessage = self.makeQueueStatusMessage(running: 0, total: totalFiles, completed: completedCount)
             
-            if convertedFiles.count == inputFilePaths.count {
-                isSuccess = true
-                outputMessage = "全部转换成功！共 \(convertedFiles.count) 个文件"
-            } else if convertedFiles.count > 0 {
-                isSuccess = false
-                outputMessage = "部分转换成功：\(convertedFiles.count)/\(inputFilePaths.count)"
+            if self.cancelRequested {
+                self.isSuccess = false
+                if self.convertedFiles.isEmpty {
+                    self.outputMessage = "已取消转换"
+                } else {
+                    self.outputMessage = "已取消转换：已完成 \(self.convertedFiles.count)/\(totalFiles)"
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.askToDeleteConvertedFiles()
+                    }
+                }
+                return
+            }
+            
+            if self.convertedFiles.count == totalFiles {
+                self.isSuccess = true
+                self.outputMessage = "全部转换成功！共 \(self.convertedFiles.count) 个文件"
+            } else if !self.convertedFiles.isEmpty {
+                self.isSuccess = false
+                self.outputMessage = "部分转换成功：\(self.convertedFiles.count)/\(totalFiles)"
             } else {
-                isSuccess = false
-                outputMessage = "转换失败"
+                self.isSuccess = false
+                self.outputMessage = "转换失败"
             }
         }
     }
     
-    private func convertSingleFile(_ filePath: String) async -> Bool {
-        await withCheckedContinuation { continuation in
+    private func convertSingleFile(_ filePath: String, settings: ConversionSettings) async -> ConversionResult {
+        let startedAt = Date()
+        let outputPath = settings.outputFilePath(for: filePath)
+        
+        return await withCheckedContinuation { continuation in
             let task = Process()
-            currentTask = task
-            task.executableURL = URL(fileURLWithPath: executablePath)
-            task.arguments = buildArguments(for: filePath)
-            
+            let taskID = UUID()
             let pipe = Pipe()
+            
+            task.executableURL = URL(fileURLWithPath: executablePath)
+            task.arguments = settings.buildArguments(for: filePath)
             task.standardOutput = pipe
             task.standardError = pipe
             
-            task.terminationHandler = { _ in
+            registerRunningTask(task, id: taskID)
+            
+            task.terminationHandler = { process in
                 let data = pipe.fileHandleForReading.readDataToEndOfFile()
-                let output = String(data: data, encoding: .utf8)
-                
-                DispatchQueue.main.async {
-                    if let output = output, !output.isEmpty {
-                        self.addLog(output)
-                    }
-                }
-                
-                continuation.resume(returning: task.terminationStatus == 0)
+                let output = String(data: data, encoding: .utf8)?
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                self.unregisterRunningTask(id: taskID)
+                continuation.resume(returning: ConversionResult(
+                    filePath: filePath,
+                    outputPath: outputPath,
+                    success: process.terminationStatus == 0,
+                    duration: Date().timeIntervalSince(startedAt),
+                    output: output?.isEmpty == false ? output : nil
+                ))
             }
             
             do {
                 try task.run()
             } catch {
-                DispatchQueue.main.async {
-                    self.addLog("错误: \(error.localizedDescription)")
-                }
-                continuation.resume(returning: false)
+                unregisterRunningTask(id: taskID)
+                continuation.resume(returning: ConversionResult(
+                    filePath: filePath,
+                    outputPath: outputPath,
+                    success: false,
+                    duration: Date().timeIntervalSince(startedAt),
+                    output: "错误: \(error.localizedDescription)"
+                ))
             }
         }
     }
     
-    func cancel() {
-        currentTask?.terminate()
-        isConverting = false
+    private func handleConversionResult(
+        _ result: ConversionResult,
+        completedCount: Int,
+        totalFiles: Int,
+        activeCount: Int
+    ) {
+        let fileName = URL(fileURLWithPath: result.filePath).lastPathComponent
         
-        if !convertedFiles.isEmpty {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.askToDeleteConvertedFiles()
-            }
+        if let output = result.output, !output.isEmpty {
+            addLog("[\(fileName)] \(output)")
         }
+        
+        if result.success {
+            convertedFiles.append(result.outputPath)
+            addLog("✓ 完成: \(fileName) (\(String(format: "%.1f", result.duration))秒)")
+            fileConversionTimes.append(result.duration)
+        } else if cancelRequested {
+            addLog("○ 已取消: \(fileName)")
+        } else {
+            addLog("✗ 失败: \(fileName)")
+        }
+        
+        currentFile = fileName
+        progress = Double(completedCount) / Double(totalFiles)
+        updateEstimatedTimeRemaining(completedCount: completedCount, totalFiles: totalFiles)
+        queueStatusMessage = makeQueueStatusMessage(running: activeCount, total: totalFiles, completed: completedCount)
+    }
+    
+    func cancel() {
+        guard isConverting else { return }
+        cancelRequested = true
+        isConverting = false
+        queueStatusMessage = "正在取消..."
+        terminateAllRunningTasks()
     }
     
     private func askToDeleteConvertedFiles() {
@@ -401,15 +655,48 @@ class HDRConverterViewModel: ObservableObject {
         convertedFiles.removeAll()
     }
     
-    private func updateEstimatedTimeRemaining(currentIndex: Int, total: Int) {
+    private func registerRunningTask(_ task: Process, id: UUID) {
+        runningTasksLock.lock()
+        runningTasks[id] = task
+        runningTasksLock.unlock()
+    }
+    
+    private func unregisterRunningTask(id: UUID) {
+        runningTasksLock.lock()
+        runningTasks.removeValue(forKey: id)
+        runningTasksLock.unlock()
+    }
+    
+    private func terminateAllRunningTasks() {
+        runningTasksLock.lock()
+        let tasks = Array(runningTasks.values)
+        runningTasksLock.unlock()
+        
+        for task in tasks where task.isRunning {
+            task.terminate()
+        }
+    }
+    
+    private func updateEstimatedTimeRemaining(completedCount: Int, totalFiles: Int) {
         guard !fileConversionTimes.isEmpty else {
             estimatedTimeRemaining = 0
             return
         }
         
         let avgTime = fileConversionTimes.reduce(0, +) / Double(fileConversionTimes.count)
-        let remainingFiles = total - (currentIndex + 1)
+        let remainingFiles = max(totalFiles - completedCount, 0)
         estimatedTimeRemaining = avgTime * Double(remainingFiles)
+    }
+    
+    private func makeQueueStatusMessage(running: Int, total: Int, completed: Int) -> String {
+        let remaining = max(total - completed - running, 0)
+        if cancelRequested {
+            return "正在取消... 运行中 \(running) / 并发上限 \(effectiveConcurrentJobs) / 剩余 \(remaining)"
+        }
+        if total == 0 {
+            return "等待开始"
+        }
+        return "运行中 \(running) / 并发上限 \(effectiveConcurrentJobs) / 剩余 \(remaining)"
     }
     
     private func addLog(_ message: String) {
