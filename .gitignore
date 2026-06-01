@@ -100,3 +100,6 @@ build/
 # Xcode workspace
 *.xcuserstate
 xcuserdata/
+
+# Build products
+*.app/

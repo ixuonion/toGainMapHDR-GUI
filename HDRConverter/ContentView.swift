@@ -172,7 +172,7 @@ struct ContentView: View {
     
     private var fileListViewDetailed: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 2) {
+            LazyVStack(alignment: .leading, spacing: 2) {
                 ForEach(viewModel.inputFilePaths, id: \.self) { path in
                     HStack(spacing: 12) {
                         Image(systemName: "doc.fill")

@@ -38,11 +38,6 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
             updateEffectiveConcurrentJobs()
         }
     }
-    @Published var performancePreference: PerformancePreference = .balanced {
-        didSet {
-            updateEffectiveConcurrentJobs()
-        }
-    }
     @Published var manualConcurrentJobs: Int = 4 {
         didSet {
             let clamped = max(1, min(Self.maxSupportedConcurrentJobs, manualConcurrentJobs))
@@ -107,12 +102,7 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         case auto = "自动"
         case manual = "手动"
     }
-    
-    enum PerformancePreference: String, CaseIterable, Sendable {
-        case efficient = "节能"
-        case balanced = "均衡"
-        case maxPerformance = "极速"
-    }
+
     
     struct CommandPart: Identifiable {
         let id = UUID()
@@ -201,16 +191,22 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         let output: String?
     }
     
-    let executablePath: String
-    let runtimeStatus: RuntimeStatus
+    @Published var executablePath: String = ""
+    @Published var runtimeStatus: RuntimeStatus
     
     init() {
-        let runtimeStatus = RuntimeStatus.detect()
-        self.runtimeStatus = runtimeStatus
-        self.executablePath = runtimeStatus.executablePath ?? ""
+        self.runtimeStatus = RuntimeStatus(executablePath: nil, missingResources: ["检测中..."])
         self.hardwareSummary = HDRConverterViewModel.makeHardwareSummary(processInfo: ProcessInfo.processInfo)
         updateDerivedValues()
         updateEffectiveConcurrentJobs()
+        
+        Task {
+            let status = await RuntimeStatus.detectAsync()
+            await MainActor.run {
+                self.runtimeStatus = status
+                self.executablePath = status.executablePath ?? ""
+            }
+        }
     }
     
     var canConvert: Bool {
@@ -351,7 +347,14 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
     
     func recommendedConcurrentJobs(for fileCount: Int) -> Int {
         guard fileCount > 1 else { return 1 }
-        return max(1, processInfo.processorCount)
+        
+        let baseConcurrency = processInfo.processorCount
+        let estimatedMemoryPerFile: Double = 200
+        
+        let availableMemory = Double(processInfo.physicalMemory) / (1024 * 1024)
+        let memoryBasedLimit = max(1, Int(availableMemory / (estimatedMemoryPerFile * 2)))
+        
+        return min(baseConcurrency, memoryBasedLimit, fileCount)
     }
     
     private func abbreviatePath(_ path: String) -> String {
@@ -530,6 +533,7 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
             let task = Process()
             let taskID = UUID()
             let pipe = Pipe()
+            var outputData = Data()
             
             task.executableURL = URL(fileURLWithPath: executablePath)
             task.arguments = settings.buildArguments(for: filePath)
@@ -538,9 +542,13 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
             
             registerRunningTask(task, id: taskID)
             
+            pipe.fileHandleForReading.readabilityHandler = { handle in
+                outputData.append(handle.availableData)
+            }
+            
             task.terminationHandler = { process in
-                let data = pipe.fileHandleForReading.readDataToEndOfFile()
-                let output = String(data: data, encoding: .utf8)?
+                pipe.fileHandleForReading.readabilityHandler = nil
+                let output = String(data: outputData, encoding: .utf8)?
                     .trimmingCharacters(in: .whitespacesAndNewlines)
                 self.unregisterRunningTask(id: taskID)
                 continuation.resume(returning: ConversionResult(
@@ -555,6 +563,7 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
             do {
                 try task.run()
             } catch {
+                pipe.fileHandleForReading.readabilityHandler = nil
                 unregisterRunningTask(id: taskID)
                 continuation.resume(returning: ConversionResult(
                     filePath: filePath,
@@ -668,9 +677,15 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         return "运行中 \(running) / 并发上限 \(effectiveConcurrentJobs) / 剩余 \(remaining)"
     }
     
+    private static let maxLogCount = 1000
+    
     private func addLog(_ message: String) {
         let timestamp = DateFormatter.logFormatter.string(from: Date())
         logs.append("[\(timestamp)] \(message)")
+        
+        while logs.count > Self.maxLogCount {
+            logs.removeFirst()
+        }
     }
 }
 
@@ -696,6 +711,10 @@ struct RuntimeStatus {
     }
 
     static func detect(fileManager: FileManager = .default, bundle: Bundle = .main) -> RuntimeStatus {
+        detectSync(fileManager: fileManager, bundle: bundle)
+    }
+
+    static func detectSync(fileManager: FileManager = .default, bundle: Bundle = .main) -> RuntimeStatus {
         let bundlePath = bundle.bundlePath
         let resourcePath = bundle.resourcePath ?? ""
         let macOSPath = "\(bundlePath)/Contents/MacOS"
@@ -728,6 +747,15 @@ struct RuntimeStatus {
         }
 
         return RuntimeStatus(executablePath: executablePath, missingResources: missingResources)
+    }
+
+    static func detectAsync(fileManager: FileManager = .default, bundle: Bundle = .main) async -> RuntimeStatus {
+        return await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .background).async {
+                let status = detectSync(fileManager: fileManager, bundle: bundle)
+                continuation.resume(returning: status)
+            }
+        }
     }
 }
 

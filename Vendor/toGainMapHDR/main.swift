@@ -11,7 +11,14 @@ import CoreImage.CIFilterBuiltins
 import ImageIO
 import UniformTypeIdentifiers
 
-let ctx = CIContext()
+let ctx: CIContext = {
+    let options: [CIContextOption: Any] = [
+        .useSoftwareRenderer: false,
+        .cacheIntermediates: true,
+        .highQualityDownsample: true
+    ]
+    return CIContext(options: options)
+}()
 let help_info = "Usage: toGainMapHDR <source file> <destination folder> <options>\n       default: output HDR-heic with ISO gain map in RGB\n       options:\n         -q <value>: image quality (default: 0.85)\n         -r <value>: SDR tone mapping ratio (≥ 1.0, default: 3.0)\n             ratio = 1.0: keep full highlight details\n             ratio >> 10: lose all highlight details\n         -R <value>: max headroom for tone mapping (default: 6)\n         -b <base_image>: specify base image\n         -t <text>: add extra text after the output file name\n         -c <color space>: specify output color space (srgb, p3, rec2020)\n         -d <color depth>: specify output color depth (default: 6)\n         -g: output Apple gain map HDR\n         -m: export ISO Gain Map HDR in monochrome\n         -H <value>: gain map subsample factor, 1 for full size (default) and 2 for half size\n         -s: export tone mapped SDR image\n         -p: export 10bit PQ HDR heic image\n         -h: export HLG HDR heic image (default in 10bit)\n         -j : export image in JPEG format\n         -help: print help information"
 let arguments = CommandLine.arguments
 guard arguments.count > 2 else {
@@ -312,14 +319,20 @@ func lanczosResizeImage(originalImage: CIImage) -> CIImage {
 }
 
 func maxLuminance(from ciImage: CIImage) -> Float? {
-    let extent = ciImage.extent
+    let maxDimension: CGFloat = 512
+    let width = ciImage.extent.width
+    let height = ciImage.extent.height
+    let scale = min(1.0, maxDimension / max(width, height))
+    
+    let scaledImage = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+    
+    let extent = scaledImage.extent
     let filter = CIFilter.areaMaximum()
-    filter.inputImage = ciImage
+    filter.inputImage = scaledImage
     filter.extent = extent
     
     guard let outputImage = filter.outputImage else { return nil }
     
-    // Use floating point format to preserve HDR values
     var bitmap = [Float](repeating: 0, count: 4)
     ctx.render(outputImage,
                    toBitmap: &bitmap,
@@ -332,7 +345,7 @@ func maxLuminance(from ciImage: CIImage) -> Float? {
     let g = bitmap[1]
     let b = bitmap[2]
     
-    let luminance: Float = max(r,g,b)
+    let luminance: Float = max(r, g, b) / Float(scale)
     return luminance
 }
 
@@ -527,7 +540,7 @@ if !apple_gain_map && half_size {
         nil
         )
     
-    let context = CIContext(options: [CIContextOption.outputColorSpace:CGColorSpace(name: sdr_color_space)!])
+    let context = ctx
     
     let baseCG = context.createCGImage(tonemapped_sdrimage, from: tonemapped_sdrimage.extent)
     
