@@ -139,6 +139,7 @@ build/Export/HDRConverter.app
 - `docs/MERGE_NOTES.md`：代码合并说明
 - `docs/PACKAGING.md`：打包配置说明
 - `docs/HIG_AUDIT.md`：macOS Human Interface Guidelines 对照记录
+- `docs/PERFORMANCE.md`：性能瓶颈、真实素材基线与优化策略
 - `screenshots/README.md`：GUI 优化前后截图生成说明
 
 ## 许可证

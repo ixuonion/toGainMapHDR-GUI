@@ -29,6 +29,9 @@ build/Export/HDRConverter.app
 - `Contents/Resources/GainMapKernel.ci.metallib`
 - `Contents/Resources/RGBGainMapKernel.ci.metallib`
 
+这些文件的源文件位于项目的 `HDRConverter/` 目录。脚本会关闭 Xcode
+构建阶段签名，复制资源后清理扩展属性，并执行本地 ad-hoc 签名和严格验证。
+
 ## 验证命令
 
 ```bash

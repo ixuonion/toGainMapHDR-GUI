@@ -6,6 +6,7 @@
 set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+RUNTIME_DIR="$SCRIPT_DIR/HDRConverter"
 PROJECT_NAME="HDRConverter"
 CONFIGURATION="${1:-Release}"
 BUILD_DIR="$SCRIPT_DIR/build"
@@ -30,6 +31,7 @@ xcodebuild \
     -scheme "$PROJECT_NAME" \
     -configuration "$CONFIGURATION" \
     -derivedDataPath "$ARCHIVE_DIR" \
+    CODE_SIGNING_ALLOWED=NO \
     build
 
 # 3. 找到构建好的应用
@@ -57,9 +59,9 @@ echo "步骤 5: 复制资源文件..."
 CONTENTS_MACOS="$OUTPUT_APP/Contents/MacOS"
 CONTENTS_RESOURCES="$OUTPUT_APP/Contents/Resources"
 
-if [ -f "$SCRIPT_DIR/toGainMapHDR" ]; then
-    cp "$SCRIPT_DIR/toGainMapHDR" "$CONTENTS_MACOS/"
-    cp "$SCRIPT_DIR/toGainMapHDR" "$CONTENTS_RESOURCES/"
+if [ -f "$RUNTIME_DIR/toGainMapHDR" ]; then
+    cp "$RUNTIME_DIR/toGainMapHDR" "$CONTENTS_MACOS/"
+    cp "$RUNTIME_DIR/toGainMapHDR" "$CONTENTS_RESOURCES/"
     chmod +x "$CONTENTS_MACOS/toGainMapHDR"
     chmod +x "$CONTENTS_RESOURCES/toGainMapHDR"
     echo "  ✓ 已复制 toGainMapHDR 到 MacOS 目录"
@@ -69,9 +71,9 @@ else
 fi
 
 for resource in GainMapKernel.ci.metallib RGBGainMapKernel.ci.metallib; do
-    if [ -f "$SCRIPT_DIR/$resource" ]; then
-        cp "$SCRIPT_DIR/$resource" "$CONTENTS_MACOS/"
-        cp "$SCRIPT_DIR/$resource" "$CONTENTS_RESOURCES/"
+    if [ -f "$RUNTIME_DIR/$resource" ]; then
+        cp "$RUNTIME_DIR/$resource" "$CONTENTS_MACOS/"
+        cp "$RUNTIME_DIR/$resource" "$CONTENTS_RESOURCES/"
         echo "  ✓ 已复制 $resource"
     else
         echo "  ✗ 缺少 $resource"
@@ -79,9 +81,15 @@ for resource in GainMapKernel.ci.metallib RGBGainMapKernel.ci.metallib; do
     fi
 done
 
-# 6. 验证应用
+# 6. 清理扩展属性并进行本地签名
 echo ""
-echo "步骤 6: 验证应用..."
+echo "步骤 6: 签名应用..."
+xattr -cr "$OUTPUT_APP"
+codesign --force --deep --sign - "$OUTPUT_APP"
+
+# 7. 验证应用
+echo ""
+echo "步骤 7: 验证应用..."
 REQUIRED_FILES=(
     "$OUTPUT_APP/Contents/MacOS/toGainMapHDR"
     "$OUTPUT_APP/Contents/MacOS/GainMapKernel.ci.metallib"
@@ -97,6 +105,8 @@ for file in "${REQUIRED_FILES[@]}"; do
         exit 1
     fi
 done
+
+codesign --verify --deep --strict "$OUTPUT_APP"
 
 HELP_OUTPUT=$("$OUTPUT_APP/Contents/MacOS/toGainMapHDR" -help 2>&1 || true)
 if [[ "$HELP_OUTPUT" != *"Usage: toGainMapHDR"* ]]; then
@@ -118,5 +128,3 @@ echo "  1. 直接运行: open $OUTPUT_APP"
 echo "  2. 复制到应用程序: cp -R $OUTPUT_APP /Applications/"
 echo "  3. 在 Finder 中打开: open $BUILD_DIR/Export"
 echo ""
-
-open "$BUILD_DIR/Export"

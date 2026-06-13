@@ -319,16 +319,9 @@ func lanczosResizeImage(originalImage: CIImage) -> CIImage {
 }
 
 func maxLuminance(from ciImage: CIImage) -> Float? {
-    let maxDimension: CGFloat = 512
-    let width = ciImage.extent.width
-    let height = ciImage.extent.height
-    let scale = min(1.0, maxDimension / max(width, height))
-    
-    let scaledImage = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-    
-    let extent = scaledImage.extent
+    let extent = ciImage.extent
     let filter = CIFilter.areaMaximum()
-    filter.inputImage = scaledImage
+    filter.inputImage = ciImage
     filter.extent = extent
     
     guard let outputImage = filter.outputImage else { return nil }
@@ -341,12 +334,7 @@ func maxLuminance(from ciImage: CIImage) -> Float? {
                    format: .RGBAf,
                    colorSpace: nil)
     
-    let r = bitmap[0]
-    let g = bitmap[1]
-    let b = bitmap[2]
-    
-    let luminance: Float = max(r, g, b) / Float(scale)
-    return luminance
+    return max(bitmap[0], bitmap[1], bitmap[2])
 }
 
 func makeEvenSized(_ image: CIImage) -> CIImage {
@@ -661,6 +649,5 @@ exit(20)
 //let filename2 = url_hdr.deletingPathExtension().appendingPathExtension("png").lastPathComponent
 //let url_export_heic2 = path_export.appendingPathComponent(filename2)
 //try! ctx.writePNGRepresentation(of: gainmap!, to: url_export_heic2, format: CIFormat.RGBA8, colorSpace:CGColorSpace(name: CGColorSpace.displayP3)!)
-
 
 

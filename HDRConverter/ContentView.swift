@@ -34,7 +34,6 @@ struct ContentView: View {
                     }
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.inputFilePaths.count)
                 }
             }
             
@@ -597,11 +596,11 @@ struct ContentView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                         HStack {
-                            Stepper(value: $viewModel.manualConcurrentJobs, in: 1...40) {
+                            Stepper(value: $viewModel.manualConcurrentJobs, in: 1...2) {
                                 Text("\(viewModel.manualConcurrentJobs) 个文件")
                             }
                             Spacer()
-                            Text("范围 1-40")
+                            Text("范围 1-2")
                                 .font(.caption)
                                 .foregroundStyle(.tertiary)
                         }
@@ -627,7 +626,7 @@ struct ContentView: View {
                     Text("这里控制的是同时处理的文件数，不是上游 CLI 内部线程数。")
                         .font(.caption)
                         .foregroundStyle(.tertiary)
-                    
+
                     Text(viewModel.concurrencyExplanation)
                         .font(.caption)
                         .foregroundStyle(.tertiary)
@@ -745,13 +744,14 @@ struct ContentView: View {
                 Toggle("显示日志", isOn: $viewModel.showLogs)
                     .toggleStyle(.switch)
                 
-                Button("取消") {
+                Button(viewModel.isCancelling ? "正在取消..." : "取消") {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                         viewModel.cancel()
                     }
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.red)
+                .disabled(viewModel.isCancelling)
             }
             
             if viewModel.showLogs {

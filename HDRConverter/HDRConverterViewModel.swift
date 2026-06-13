@@ -4,9 +4,11 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
-    private static let maxSupportedConcurrentJobs = 40
+    private static let maxSupportedConcurrentJobs = 2
+    private static let estimatedWorkingSetPerJob: UInt64 = 4 * 1024 * 1024 * 1024
     @Published var inputFilePaths: [String] = [] {
         didSet {
+            refreshInputFileMetadata()
             updateEffectiveConcurrentJobs()
         }
     }
@@ -25,6 +27,7 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
     @Published var gainMapScaling: Double = 1.0
     @Published var monochrome: Bool = false
     @Published var isConverting: Bool = false
+    @Published private(set) var isCancelling: Bool = false
     @Published var outputMessage: String?
     @Published var isSuccess: Bool = false
     @Published var progress: Double = 0.0
@@ -38,7 +41,7 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
             updateEffectiveConcurrentJobs()
         }
     }
-    @Published var manualConcurrentJobs: Int = 4 {
+    @Published var manualConcurrentJobs: Int = 2 {
         didSet {
             let clamped = max(1, min(Self.maxSupportedConcurrentJobs, manualConcurrentJobs))
             if clamped != manualConcurrentJobs {
@@ -55,6 +58,8 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
     
     private var startTime: Date?
     private var fileConversionTimes: [TimeInterval] = []
+    private var inputFileSizes: [String: Int64] = [:]
+    private var totalInputBytes: Int64 = 0
     private let fileManager = FileManager.default
     private let processInfo = ProcessInfo.processInfo
     private let runningTasksLock = NSLock()
@@ -105,10 +110,17 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
 
     
     struct CommandPart: Identifiable {
-        let id = UUID()
+        let id: String
         let type: CommandPartType
         let content: String
         let fullContent: String
+
+        init(id: String, type: CommandPartType, content: String, fullContent: String) {
+            self.id = id
+            self.type = type
+            self.content = content
+            self.fullContent = fullContent
+        }
     }
     
     enum CommandPartType {
@@ -117,6 +129,7 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         case outputPath
         case parameterFlag
         case parameterValue
+
     }
     
     private struct ConversionSettings: Sendable {
@@ -219,10 +232,19 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         }
         
         var parts: [CommandPart] = []
-        
-        parts.append(CommandPart(type: .executable, content: "toGainMapHDR", fullContent: executablePath))
-        parts.append(CommandPart(type: .sourcePath, content: abbreviatePath(sampleFile), fullContent: sampleFile))
-        parts.append(CommandPart(type: .outputPath, content: abbreviatePath(outputDirectory), fullContent: outputDirectory))
+
+        func appendPart(type: CommandPartType, content: String, fullContent: String) {
+            parts.append(CommandPart(
+                id: "command-part-\(parts.count)",
+                type: type,
+                content: content,
+                fullContent: fullContent
+            ))
+        }
+
+        appendPart(type: .executable, content: "toGainMapHDR", fullContent: executablePath)
+        appendPart(type: .sourcePath, content: abbreviatePath(sampleFile), fullContent: sampleFile)
+        appendPart(type: .outputPath, content: abbreviatePath(outputDirectory), fullContent: outputDirectory)
         
         let args = buildArguments(for: sampleFile)
         var i = 2
@@ -230,11 +252,11 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         while i < args.count {
             let arg = args[i]
             if arg.starts(with: "-") {
-                parts.append(CommandPart(type: .parameterFlag, content: arg, fullContent: arg))
+                appendPart(type: .parameterFlag, content: arg, fullContent: arg)
                 i += 1
                 if i < args.count && !args[i].starts(with: "-") {
                     let valueArg = args[i]
-                    parts.append(CommandPart(type: .parameterValue, content: valueArg, fullContent: valueArg))
+                    appendPart(type: .parameterValue, content: valueArg, fullContent: valueArg)
                     i += 1
                 }
             } else {
@@ -246,14 +268,7 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
     }
     
     var totalFileSize: String {
-        var total: Int64 = 0
-        for path in inputFilePaths {
-            if let attrs = try? FileManager.default.attributesOfItem(atPath: path),
-               let size = attrs[.size] as? Int64 {
-                total += size
-            }
-        }
-        return ByteCountFormatter.string(fromByteCount: total, countStyle: .file)
+        ByteCountFormatter.string(fromByteCount: totalInputBytes, countStyle: .file)
     }
     
     var hasManyFiles: Bool {
@@ -265,13 +280,15 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
     }
     
     var concurrencyExplanation: String {
-        let modeText = batchConcurrencyMode == .auto ? "自动模式会直接使用 CPU 核心数作为并发数。" : "手动模式直接限制同时处理的文件数。"
+        let modeText = batchConcurrencyMode == .auto
+            ? "自动模式会根据芯片、内存容量和文件数选择均衡并发。"
+            : "手动模式直接限制同时处理的文件数。"
         let riskText: String
         switch batchConcurrencyMode {
         case .manual:
-            riskText = manualConcurrentJobs >= 6 ? "较高并发会增加功耗、内存压力，并且未必继续提速。" : "建议先从 2-4 并发开始观察吞吐和温度。"
+            riskText = "严格兼容模式最多同时处理 2 个文件。"
         case .auto:
-            riskText = "当前会忽略保守推荐逻辑，直接拉满到 CPU 核心数；文件数不足时则以文件数为准。"
+            riskText = "大型 HDR 图像会占用数 GB 工作内存，因此不会直接按 CPU 核心数拉满。"
         }
         return modeText + riskText
     }
@@ -281,8 +298,7 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
     }
     
     func getFileSize(for path: String) -> String {
-        if let attrs = try? FileManager.default.attributesOfItem(atPath: path),
-           let size = attrs[.size] as? Int64 {
+        if let size = inputFileSizes[path] {
             return ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
         }
         return "-"
@@ -337,7 +353,10 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         switch batchConcurrencyMode {
         case .manual:
             concurrentJobs = manualConcurrentJobs
-            upperBound = max(1, min(fileCount, Self.maxSupportedConcurrentJobs))
+            upperBound = max(
+                1,
+                min(fileCount, Self.maxSupportedConcurrentJobs, manualMemoryLimit)
+            )
         case .auto:
             concurrentJobs = recommendedConcurrentJobs(for: fileCount)
             upperBound = max(1, fileCount)
@@ -347,14 +366,40 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
     
     func recommendedConcurrentJobs(for fileCount: Int) -> Int {
         guard fileCount > 1 else { return 1 }
-        
-        let baseConcurrency = processInfo.processorCount
-        let estimatedMemoryPerFile: Double = 200
-        
-        let availableMemory = Double(processInfo.physicalMemory) / (1024 * 1024)
-        let memoryBasedLimit = max(1, Int(availableMemory / (estimatedMemoryPerFile * 2)))
-        
-        return min(baseConcurrency, memoryBasedLimit, fileCount)
+
+        let usableMemory = UInt64(Double(processInfo.physicalMemory) * 0.6)
+        let memoryLimit = max(1, Int(usableMemory / Self.estimatedWorkingSetPerJob))
+        let hardwareLimit: Int
+
+        if isAppleSilicon {
+            hardwareLimit = processInfo.activeProcessorCount >= 8 ? 2 : 1
+        } else {
+            hardwareLimit = 1
+        }
+
+        return min(hardwareLimit, memoryLimit, fileCount)
+    }
+
+    private var manualMemoryLimit: Int {
+        let usableMemory = UInt64(Double(processInfo.physicalMemory) * 0.75)
+        return max(1, Int(usableMemory / Self.estimatedWorkingSetPerJob))
+    }
+
+    private func refreshInputFileMetadata() {
+        var sizes: [String: Int64] = [:]
+        var total: Int64 = 0
+
+        for path in inputFilePaths {
+            if let attributes = try? fileManager.attributesOfItem(atPath: path),
+               let size = attributes[.size] as? NSNumber {
+                let byteCount = size.int64Value
+                sizes[path] = byteCount
+                total += byteCount
+            }
+        }
+
+        inputFileSizes = sizes
+        totalInputBytes = total
     }
     
     private func abbreviatePath(_ path: String) -> String {
@@ -379,7 +424,8 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         
         if panel.runModal() == .OK {
             let newPaths = panel.urls.map { $0.path }
-            inputFilePaths.append(contentsOf: newPaths.filter { !inputFilePaths.contains($0) })
+            let existingPaths = Set(inputFilePaths)
+            inputFilePaths.append(contentsOf: newPaths.filter { !existingPaths.contains($0) })
             
             if outputDirectory.isEmpty, let firstURL = panel.urls.first {
                 outputDirectory = firstURL.deletingLastPathComponent().path
@@ -427,9 +473,18 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
     
     func convert() {
         guard canConvert else { return }
+
+        let settings = makeConversionSettings()
+        let outputPaths = inputFilePaths.map { settings.outputFilePath(for: $0) }
+        guard Set(outputPaths).count == outputPaths.count else {
+            isSuccess = false
+            outputMessage = "存在同名输入文件，将写入同一个输出路径。请分批转换。"
+            return
+        }
         
         updateEffectiveConcurrentJobs()
         cancelRequested = false
+        isCancelling = false
         isConverting = true
         progress = 0
         currentFile = ""
@@ -439,16 +494,26 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         startTime = Date()
         queueStatusMessage = makeQueueStatusMessage(running: 0, total: inputFilePaths.count, completed: 0)
         
+        let filePaths = inputFilePaths
+        let executablePath = self.executablePath
+        let concurrencyLimit = min(max(1, effectiveConcurrentJobs), filePaths.count)
         Task {
-            await convertFiles()
+            await convertFiles(
+                filePaths: filePaths,
+                settings: settings,
+                executablePath: executablePath,
+                concurrencyLimit: concurrencyLimit
+            )
         }
     }
     
-    private func convertFiles() async {
-        let filePaths = inputFilePaths
+    private func convertFiles(
+        filePaths: [String],
+        settings: ConversionSettings,
+        executablePath: String,
+        concurrencyLimit: Int
+    ) async {
         let totalFiles = filePaths.count
-        let settings = makeConversionSettings()
-        let concurrencyLimit = min(max(1, effectiveConcurrentJobs), totalFiles)
         var nextIndex = 0
         var activeCount = 0
         var completedCount = 0
@@ -462,7 +527,11 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
                 self.queueStatusMessage = self.makeQueueStatusMessage(running: activeCount, total: totalFiles, completed: completedCount)
             }
             group.addTask { [self, settings] in
-                await self.convertSingleFile(filePath, settings: settings)
+                await self.convertSingleFile(
+                    filePath,
+                    settings: settings,
+                    executablePath: executablePath
+                )
             }
         }
         
@@ -496,8 +565,10 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         
         await MainActor.run {
             self.isConverting = false
+            self.isCancelling = false
             self.currentFile = ""
             self.queueStatusMessage = self.makeQueueStatusMessage(running: 0, total: totalFiles, completed: completedCount)
+            self.logBatchSummary(completedCount: completedCount, totalFiles: totalFiles, concurrency: concurrencyLimit)
             
             if self.cancelRequested {
                 self.isSuccess = false
@@ -525,7 +596,11 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         }
     }
     
-    private func convertSingleFile(_ filePath: String, settings: ConversionSettings) async -> ConversionResult {
+    private func convertSingleFile(
+        _ filePath: String,
+        settings: ConversionSettings,
+        executablePath: String
+    ) async -> ConversionResult {
         let startedAt = Date()
         let outputPath = settings.outputFilePath(for: filePath)
         
@@ -533,7 +608,7 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
             let task = Process()
             let taskID = UUID()
             let pipe = Pipe()
-            var outputData = Data()
+            let outputBuffer = ProcessOutputBuffer()
             
             task.executableURL = URL(fileURLWithPath: executablePath)
             task.arguments = settings.buildArguments(for: filePath)
@@ -543,25 +618,38 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
             registerRunningTask(task, id: taskID)
             
             pipe.fileHandleForReading.readabilityHandler = { handle in
-                outputData.append(handle.availableData)
+                outputBuffer.readAvailableData(from: handle)
             }
             
             task.terminationHandler = { process in
                 pipe.fileHandleForReading.readabilityHandler = nil
-                let output = String(data: outputData, encoding: .utf8)?
+                outputBuffer.readToEnd(from: pipe.fileHandleForReading)
+                let output = String(data: outputBuffer.data, encoding: .utf8)?
                     .trimmingCharacters(in: .whitespacesAndNewlines)
                 self.unregisterRunningTask(id: taskID)
+                let outputExists = self.fileManager.fileExists(atPath: outputPath)
                 continuation.resume(returning: ConversionResult(
                     filePath: filePath,
                     outputPath: outputPath,
-                    success: process.terminationStatus == 0,
+                    success: process.terminationStatus == 0 && outputExists,
                     duration: Date().timeIntervalSince(startedAt),
                     output: output?.isEmpty == false ? output : nil
                 ))
             }
             
             do {
-                try task.run()
+                guard try runTaskUnlessCancelled(task) else {
+                    pipe.fileHandleForReading.readabilityHandler = nil
+                    unregisterRunningTask(id: taskID)
+                    continuation.resume(returning: ConversionResult(
+                        filePath: filePath,
+                        outputPath: outputPath,
+                        success: false,
+                        duration: Date().timeIntervalSince(startedAt),
+                        output: nil
+                    ))
+                    return
+                }
             } catch {
                 pipe.fileHandleForReading.readabilityHandler = nil
                 unregisterRunningTask(id: taskID)
@@ -574,6 +662,15 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
                 ))
             }
         }
+    }
+
+    private func runTaskUnlessCancelled(_ task: Process) throws -> Bool {
+        cancellationLock.lock()
+        defer { cancellationLock.unlock() }
+
+        guard !_cancelRequested else { return false }
+        try task.run()
+        return true
     }
     
     private func handleConversionResult(
@@ -605,9 +702,9 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
     }
     
     func cancel() {
-        guard isConverting else { return }
+        guard isConverting, !isCancelling else { return }
         cancelRequested = true
-        isConverting = false
+        isCancelling = true
         queueStatusMessage = "正在取消..."
         terminateAllRunningTasks()
     }
@@ -663,7 +760,7 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         
         let avgTime = fileConversionTimes.reduce(0, +) / Double(fileConversionTimes.count)
         let remainingFiles = max(totalFiles - completedCount, 0)
-        estimatedTimeRemaining = avgTime * Double(remainingFiles)
+        estimatedTimeRemaining = avgTime * Double(remainingFiles) / Double(max(effectiveConcurrentJobs, 1))
     }
     
     private func makeQueueStatusMessage(running: Int, total: Int, completed: Int) -> String {
@@ -683,9 +780,49 @@ final class HDRConverterViewModel: ObservableObject, @unchecked Sendable {
         let timestamp = DateFormatter.logFormatter.string(from: Date())
         logs.append("[\(timestamp)] \(message)")
         
-        while logs.count > Self.maxLogCount {
-            logs.removeFirst()
+        if logs.count > Self.maxLogCount {
+            logs.removeFirst(logs.count - Self.maxLogCount)
         }
+    }
+
+    private func logBatchSummary(completedCount: Int, totalFiles: Int, concurrency: Int) {
+        guard let startTime else { return }
+        let elapsed = Date().timeIntervalSince(startTime)
+        let throughput = elapsed > 0 ? Double(completedCount) / elapsed * 60 : 0
+        addLog(
+            "批次统计: 完成 \(completedCount)/\(totalFiles)，并发 \(concurrency)，"
+            + "总耗时 \(String(format: "%.1f", elapsed)) 秒，"
+            + "吞吐 \(String(format: "%.2f", throughput)) 张/分钟"
+        )
+    }
+}
+
+private final class ProcessOutputBuffer: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage = Data()
+
+    var data: Data {
+        lock.lock()
+        defer { lock.unlock() }
+        return storage
+    }
+
+    func readAvailableData(from handle: FileHandle) {
+        lock.lock()
+        let data = handle.availableData
+        if !data.isEmpty {
+            storage.append(data)
+        }
+        lock.unlock()
+    }
+
+    func readToEnd(from handle: FileHandle) {
+        lock.lock()
+        let data = handle.readDataToEndOfFile()
+        if !data.isEmpty {
+            storage.append(data)
+        }
+        lock.unlock()
     }
 }
 
