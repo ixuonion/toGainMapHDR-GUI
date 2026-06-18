@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# SwiftPM / Xcode build output
+.build/
+DerivedData/
+.swiftpm/
+
+# Packaged app and release archives
+dist/
+*.zip
