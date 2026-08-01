@@ -4,6 +4,11 @@ import Testing
 
 @Suite("Conversion command")
 struct ConversionCommandTests {
+    @Test("Loads localized resources")
+    func loadsLocalizedResources() {
+        #expect(L10n.text("ready") != "ready")
+    }
+
     @Test("Builds backend command from README contract")
     func buildsSingleFileCommand() throws {
         let input = ImageInput(url: URL(fileURLWithPath: "/Users/example/In/test.tiff"))

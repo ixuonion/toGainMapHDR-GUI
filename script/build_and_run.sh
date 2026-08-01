@@ -15,14 +15,20 @@ APP_RESOURCES="$APP_CONTENTS/Resources"
 APP_BINARY="$APP_MACOS/$APP_NAME"
 INFO_PLIST="$APP_CONTENTS/Info.plist"
 BACKEND_SOURCE="$ROOT_DIR/Sources/GainMapHDRApp/Resources/backend"
+RESOURCE_BUNDLE_NAME="${APP_NAME}_GainMapHDRApp.bundle"
 
 export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
 export CLANG_MODULE_CACHE_PATH="$ROOT_DIR/.build/module-cache"
 
+BUILD_CONFIGURATION="debug"
+if [[ "$MODE" == "--package" || "$MODE" == "package" ]]; then
+  BUILD_CONFIGURATION="release"
+fi
+
 pkill -x "$APP_NAME" >/dev/null 2>&1 || true
 
-swift build --scratch-path "$ROOT_DIR/.build"
-BUILD_BINARY="$(swift build --scratch-path "$ROOT_DIR/.build" --show-bin-path)/$APP_NAME"
+swift build --configuration "$BUILD_CONFIGURATION" --scratch-path "$ROOT_DIR/.build"
+BUILD_BINARY="$(swift build --configuration "$BUILD_CONFIGURATION" --scratch-path "$ROOT_DIR/.build" --show-bin-path)/$APP_NAME"
 
 rm -rf "$APP_BUNDLE"
 mkdir -p "$APP_MACOS"
@@ -32,6 +38,11 @@ chmod +x "$APP_BINARY"
 find "$(dirname "$BUILD_BINARY")" -maxdepth 1 -name "${APP_NAME}_*.bundle" -exec cp -R {} "$APP_RESOURCES/" \;
 cp -R "$BACKEND_SOURCE" "$APP_RESOURCES/backend"
 chmod +x "$APP_RESOURCES/backend/toGainMapHDR"
+
+if [[ ! -d "$APP_RESOURCES/$RESOURCE_BUNDLE_NAME" ]]; then
+  echo "missing SwiftPM resource bundle: $RESOURCE_BUNDLE_NAME" >&2
+  exit 1
+fi
 
 cat >"$INFO_PLIST" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
