@@ -1,0 +1,2060 @@
+[
+  {
+    "timestamp": 1789647449.179627,
+    "completedMeasurements": 3,
+    "activeProcesses": 2,
+    "totalRSSMiB": 4323.75,
+    "largestRSSMiB": 2250.40625
+  },
+  {
+    "timestamp": 1789647450.238132,
+    "completedMeasurements": 3,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7476.578125,
+    "largestRSSMiB": 3821.46875
+  },
+  {
+    "timestamp": 1789647451.281014,
+    "completedMeasurements": 3,
+    "activeProcesses": 2,
+    "totalRSSMiB": 3815.203125,
+    "largestRSSMiB": 2189.140625
+  },
+  {
+    "timestamp": 1789647452.332981,
+    "completedMeasurements": 3,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7072.5,
+    "largestRSSMiB": 4214.0
+  },
+  {
+    "timestamp": 1789647453.367415,
+    "completedMeasurements": 3,
+    "activeProcesses": 2,
+    "totalRSSMiB": 1035.78125,
+    "largestRSSMiB": 569.484375
+  },
+  {
+    "timestamp": 1789647454.416608,
+    "completedMeasurements": 3,
+    "activeProcesses": 2,
+    "totalRSSMiB": 4403.8125,
+    "largestRSSMiB": 2248.828125
+  },
+  {
+    "timestamp": 1789647455.460605,
+    "completedMeasurements": 3,
+    "activeProcesses": 2,
+    "totalRSSMiB": 8063.546875,
+    "largestRSSMiB": 4134.46875
+  },
+  {
+    "timestamp": 1789647456.4975371,
+    "completedMeasurements": 3,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1187.421875,
+    "largestRSSMiB": 1187.421875
+  },
+  {
+    "timestamp": 1789647457.535043,
+    "completedMeasurements": 3,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2826.09375,
+    "largestRSSMiB": 2826.09375
+  },
+  {
+    "timestamp": 1789647458.584505,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 4219.8125,
+    "largestRSSMiB": 1062.8125
+  },
+  {
+    "timestamp": 1789647459.6298099,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 8466.859375,
+    "largestRSSMiB": 2565.875
+  },
+  {
+    "timestamp": 1789647460.701642,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 13833.234375,
+    "largestRSSMiB": 3695.3125
+  },
+  {
+    "timestamp": 1789647461.740291,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 2061.328125,
+    "largestRSSMiB": 556.265625
+  },
+  {
+    "timestamp": 1789647462.795447,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 5270.125,
+    "largestRSSMiB": 1498.984375
+  },
+  {
+    "timestamp": 1789647463.848779,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 12145.765625,
+    "largestRSSMiB": 3318.453125
+  },
+  {
+    "timestamp": 1789647464.891252,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 10315.265625,
+    "largestRSSMiB": 3611.109375
+  },
+  {
+    "timestamp": 1789647465.938263,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 2173.0,
+    "largestRSSMiB": 1254.9375
+  },
+  {
+    "timestamp": 1789647466.99476,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 7402.75,
+    "largestRSSMiB": 2902.75
+  },
+  {
+    "timestamp": 1789647468.192833,
+    "completedMeasurements": 4,
+    "activeProcesses": 3,
+    "totalRSSMiB": 9314.078125,
+    "largestRSSMiB": 3878.34375
+  },
+  {
+    "timestamp": 1789647469.246401,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 9195.875,
+    "largestRSSMiB": 3742.578125
+  },
+  {
+    "timestamp": 1789647470.305011,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 6382.640625,
+    "largestRSSMiB": 2830.421875
+  },
+  {
+    "timestamp": 1789647471.381471,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 11084.5,
+    "largestRSSMiB": 3889.859375
+  },
+  {
+    "timestamp": 1789647472.425507,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 8944.03125,
+    "largestRSSMiB": 3952.140625
+  },
+  {
+    "timestamp": 1789647473.481062,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 4948.609375,
+    "largestRSSMiB": 2380.21875
+  },
+  {
+    "timestamp": 1789647474.572416,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 10269.4375,
+    "largestRSSMiB": 3221.953125
+  },
+  {
+    "timestamp": 1789647475.6207821,
+    "completedMeasurements": 4,
+    "activeProcesses": 4,
+    "totalRSSMiB": 7141.03125,
+    "largestRSSMiB": 3272.78125
+  },
+  {
+    "timestamp": 1789647476.665249,
+    "completedMeasurements": 4,
+    "activeProcesses": 3,
+    "totalRSSMiB": 2904.46875,
+    "largestRSSMiB": 1572.90625
+  },
+  {
+    "timestamp": 1789647477.7195399,
+    "completedMeasurements": 4,
+    "activeProcesses": 3,
+    "totalRSSMiB": 8429.875,
+    "largestRSSMiB": 3420.15625
+  },
+  {
+    "timestamp": 1789647478.762053,
+    "completedMeasurements": 4,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7482.296875,
+    "largestRSSMiB": 3859.78125
+  },
+  {
+    "timestamp": 1789647479.817503,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 3432.6875,
+    "largestRSSMiB": 1225.25
+  },
+  {
+    "timestamp": 1789647480.869198,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 7794.21875,
+    "largestRSSMiB": 2515.078125
+  },
+  {
+    "timestamp": 1789647481.980426,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 11177.453125,
+    "largestRSSMiB": 3085.828125
+  },
+  {
+    "timestamp": 1789647483.020965,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 10787.078125,
+    "largestRSSMiB": 3399.890625
+  },
+  {
+    "timestamp": 1789647484.0756748,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 4427.90625,
+    "largestRSSMiB": 1380.890625
+  },
+  {
+    "timestamp": 1789647485.1737988,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 11016.484375,
+    "largestRSSMiB": 3065.5625
+  },
+  {
+    "timestamp": 1789647486.230686,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 10800.6875,
+    "largestRSSMiB": 2863.0
+  },
+  {
+    "timestamp": 1789647487.2942479,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 4590.390625,
+    "largestRSSMiB": 1372.578125
+  },
+  {
+    "timestamp": 1789647488.3408499,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 8774.421875,
+    "largestRSSMiB": 2937.765625
+  },
+  {
+    "timestamp": 1789647489.420413,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 13166.125,
+    "largestRSSMiB": 3733.828125
+  },
+  {
+    "timestamp": 1789647490.463688,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 2681.625,
+    "largestRSSMiB": 1200.8125
+  },
+  {
+    "timestamp": 1789647491.531223,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 8316.65625,
+    "largestRSSMiB": 2934.75
+  },
+  {
+    "timestamp": 1789647492.6385658,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 11971.59375,
+    "largestRSSMiB": 3207.515625
+  },
+  {
+    "timestamp": 1789647493.689992,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 8768.265625,
+    "largestRSSMiB": 3735.53125
+  },
+  {
+    "timestamp": 1789647494.7408042,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 7130.890625,
+    "largestRSSMiB": 2349.828125
+  },
+  {
+    "timestamp": 1789647495.7940428,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 12427.921875,
+    "largestRSSMiB": 3519.78125
+  },
+  {
+    "timestamp": 1789647496.8331609,
+    "completedMeasurements": 5,
+    "activeProcesses": 4,
+    "totalRSSMiB": 8453.625,
+    "largestRSSMiB": 3797.296875
+  },
+  {
+    "timestamp": 1789647497.886639,
+    "completedMeasurements": 5,
+    "activeProcesses": 3,
+    "totalRSSMiB": 4368.0,
+    "largestRSSMiB": 1958.9375
+  },
+  {
+    "timestamp": 1789647498.931911,
+    "completedMeasurements": 5,
+    "activeProcesses": 3,
+    "totalRSSMiB": 9041.15625,
+    "largestRSSMiB": 3345.1875
+  },
+  {
+    "timestamp": 1789647499.965226,
+    "completedMeasurements": 5,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3755.59375,
+    "largestRSSMiB": 3755.59375
+  },
+  {
+    "timestamp": 1789647501.031966,
+    "completedMeasurements": 6,
+    "activeProcesses": 8,
+    "totalRSSMiB": 8699.796875,
+    "largestRSSMiB": 1512.828125
+  },
+  {
+    "timestamp": 1789647502.651003,
+    "completedMeasurements": 6,
+    "activeProcesses": 8,
+    "totalRSSMiB": 12013.78125,
+    "largestRSSMiB": 2010.484375
+  },
+  {
+    "timestamp": 1789647503.915709,
+    "completedMeasurements": 6,
+    "activeProcesses": 8,
+    "totalRSSMiB": 12486.09375,
+    "largestRSSMiB": 1754.8125
+  },
+  {
+    "timestamp": 1789647505.4016871,
+    "completedMeasurements": 6,
+    "activeProcesses": 8,
+    "totalRSSMiB": 13932.671875,
+    "largestRSSMiB": 2448.390625
+  },
+  {
+    "timestamp": 1789647506.458495,
+    "completedMeasurements": 6,
+    "activeProcesses": 7,
+    "totalRSSMiB": 8299.78125,
+    "largestRSSMiB": 2416.109375
+  },
+  {
+    "timestamp": 1789647507.5120919,
+    "completedMeasurements": 6,
+    "activeProcesses": 8,
+    "totalRSSMiB": 5518.375,
+    "largestRSSMiB": 1099.34375
+  },
+  {
+    "timestamp": 1789647508.6567302,
+    "completedMeasurements": 6,
+    "activeProcesses": 8,
+    "totalRSSMiB": 12835.921875,
+    "largestRSSMiB": 2720.484375
+  },
+  {
+    "timestamp": 1789647509.892094,
+    "completedMeasurements": 6,
+    "activeProcesses": 8,
+    "totalRSSMiB": 9861.34375,
+    "largestRSSMiB": 1873.453125
+  },
+  {
+    "timestamp": 1789647511.34852,
+    "completedMeasurements": 6,
+    "activeProcesses": 8,
+    "totalRSSMiB": 13573.703125,
+    "largestRSSMiB": 2216.53125
+  },
+  {
+    "timestamp": 1789647512.548299,
+    "completedMeasurements": 6,
+    "activeProcesses": 6,
+    "totalRSSMiB": 8873.96875,
+    "largestRSSMiB": 1591.875
+  },
+  {
+    "timestamp": 1789647513.628639,
+    "completedMeasurements": 6,
+    "activeProcesses": 6,
+    "totalRSSMiB": 8154.859375,
+    "largestRSSMiB": 2097.9375
+  },
+  {
+    "timestamp": 1789647514.707585,
+    "completedMeasurements": 6,
+    "activeProcesses": 7,
+    "totalRSSMiB": 8028.671875,
+    "largestRSSMiB": 1767.65625
+  },
+  {
+    "timestamp": 1789647515.891457,
+    "completedMeasurements": 6,
+    "activeProcesses": 7,
+    "totalRSSMiB": 12776.296875,
+    "largestRSSMiB": 2476.859375
+  },
+  {
+    "timestamp": 1789647517.1065211,
+    "completedMeasurements": 6,
+    "activeProcesses": 7,
+    "totalRSSMiB": 14694.796875,
+    "largestRSSMiB": 2622.3125
+  },
+  {
+    "timestamp": 1789647518.2438579,
+    "completedMeasurements": 6,
+    "activeProcesses": 7,
+    "totalRSSMiB": 15307.015625,
+    "largestRSSMiB": 2594.5625
+  },
+  {
+    "timestamp": 1789647519.306536,
+    "completedMeasurements": 6,
+    "activeProcesses": 2,
+    "totalRSSMiB": 5095.15625,
+    "largestRSSMiB": 2550.546875
+  },
+  {
+    "timestamp": 1789647520.348795,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 4313.03125,
+    "largestRSSMiB": 725.59375
+  },
+  {
+    "timestamp": 1789647521.434198,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 8583.0,
+    "largestRSSMiB": 1519.75
+  },
+  {
+    "timestamp": 1789647522.693053,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 12321.109375,
+    "largestRSSMiB": 2324.765625
+  },
+  {
+    "timestamp": 1789647523.905447,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 12526.890625,
+    "largestRSSMiB": 2267.3125
+  },
+  {
+    "timestamp": 1789647524.944872,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 10968.734375,
+    "largestRSSMiB": 2285.390625
+  },
+  {
+    "timestamp": 1789647526.0351381,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 5840.15625,
+    "largestRSSMiB": 1846.296875
+  },
+  {
+    "timestamp": 1789647527.3184152,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 10291.0,
+    "largestRSSMiB": 2107.796875
+  },
+  {
+    "timestamp": 1789647528.471264,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 11348.515625,
+    "largestRSSMiB": 2177.359375
+  },
+  {
+    "timestamp": 1789647529.553282,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 10728.15625,
+    "largestRSSMiB": 2894.0
+  },
+  {
+    "timestamp": 1789647530.622528,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 6242.140625,
+    "largestRSSMiB": 1425.734375
+  },
+  {
+    "timestamp": 1789647531.805975,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 13347.046875,
+    "largestRSSMiB": 3028.375
+  },
+  {
+    "timestamp": 1789647532.934293,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 13035.71875,
+    "largestRSSMiB": 2602.71875
+  },
+  {
+    "timestamp": 1789647533.9866428,
+    "completedMeasurements": 7,
+    "activeProcesses": 6,
+    "totalRSSMiB": 10728.671875,
+    "largestRSSMiB": 2296.484375
+  },
+  {
+    "timestamp": 1789647535.031661,
+    "completedMeasurements": 7,
+    "activeProcesses": 5,
+    "totalRSSMiB": 3298.046875,
+    "largestRSSMiB": 708.0625
+  },
+  {
+    "timestamp": 1789647536.100256,
+    "completedMeasurements": 7,
+    "activeProcesses": 5,
+    "totalRSSMiB": 9952.59375,
+    "largestRSSMiB": 2436.53125
+  },
+  {
+    "timestamp": 1789647537.1752908,
+    "completedMeasurements": 7,
+    "activeProcesses": 5,
+    "totalRSSMiB": 13825.34375,
+    "largestRSSMiB": 3199.5
+  },
+  {
+    "timestamp": 1789647538.213838,
+    "completedMeasurements": 7,
+    "activeProcesses": 3,
+    "totalRSSMiB": 8356.484375,
+    "largestRSSMiB": 2896.078125
+  },
+  {
+    "timestamp": 1789647539.259454,
+    "completedMeasurements": 8,
+    "activeProcesses": 6,
+    "totalRSSMiB": 3402.28125,
+    "largestRSSMiB": 571.265625
+  },
+  {
+    "timestamp": 1789647540.305491,
+    "completedMeasurements": 8,
+    "activeProcesses": 6,
+    "totalRSSMiB": 8110.140625,
+    "largestRSSMiB": 1415.3125
+  },
+  {
+    "timestamp": 1789647541.741527,
+    "completedMeasurements": 8,
+    "activeProcesses": 6,
+    "totalRSSMiB": 9500.5625,
+    "largestRSSMiB": 1971.796875
+  },
+  {
+    "timestamp": 1789647542.85071,
+    "completedMeasurements": 8,
+    "activeProcesses": 6,
+    "totalRSSMiB": 13291.84375,
+    "largestRSSMiB": 2489.5625
+  },
+  {
+    "timestamp": 1789647543.8912141,
+    "completedMeasurements": 8,
+    "activeProcesses": 6,
+    "totalRSSMiB": 4608.25,
+    "largestRSSMiB": 2297.265625
+  },
+  {
+    "timestamp": 1789647544.98504,
+    "completedMeasurements": 8,
+    "activeProcesses": 5,
+    "totalRSSMiB": 8188.875,
+    "largestRSSMiB": 2170.171875
+  },
+  {
+    "timestamp": 1789647546.159125,
+    "completedMeasurements": 8,
+    "activeProcesses": 6,
+    "totalRSSMiB": 13188.5625,
+    "largestRSSMiB": 2832.3125
+  },
+  {
+    "timestamp": 1789647547.347053,
+    "completedMeasurements": 8,
+    "activeProcesses": 6,
+    "totalRSSMiB": 13252.21875,
+    "largestRSSMiB": 2964.375
+  },
+  {
+    "timestamp": 1789647548.4142258,
+    "completedMeasurements": 8,
+    "activeProcesses": 6,
+    "totalRSSMiB": 9953.171875,
+    "largestRSSMiB": 3029.0625
+  },
+  {
+    "timestamp": 1789647549.507124,
+    "completedMeasurements": 8,
+    "activeProcesses": 6,
+    "totalRSSMiB": 13186.265625,
+    "largestRSSMiB": 2798.78125
+  },
+  {
+    "timestamp": 1789647550.6347342,
+    "completedMeasurements": 8,
+    "activeProcesses": 6,
+    "totalRSSMiB": 15200.890625,
+    "largestRSSMiB": 2836.921875
+  },
+  {
+    "timestamp": 1789647551.687296,
+    "completedMeasurements": 8,
+    "activeProcesses": 6,
+    "totalRSSMiB": 11737.515625,
+    "largestRSSMiB": 2753.53125
+  },
+  {
+    "timestamp": 1789647552.740048,
+    "completedMeasurements": 8,
+    "activeProcesses": 5,
+    "totalRSSMiB": 3619.46875,
+    "largestRSSMiB": 1011.09375
+  },
+  {
+    "timestamp": 1789647553.824926,
+    "completedMeasurements": 8,
+    "activeProcesses": 5,
+    "totalRSSMiB": 11875.4375,
+    "largestRSSMiB": 3161.96875
+  },
+  {
+    "timestamp": 1789647554.919952,
+    "completedMeasurements": 8,
+    "activeProcesses": 5,
+    "totalRSSMiB": 13176.625,
+    "largestRSSMiB": 2887.84375
+  },
+  {
+    "timestamp": 1789647555.952563,
+    "completedMeasurements": 8,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3180.796875,
+    "largestRSSMiB": 3180.796875
+  },
+  {
+    "timestamp": 1789647557.0129201,
+    "completedMeasurements": 9,
+    "activeProcesses": 8,
+    "totalRSSMiB": 8099.90625,
+    "largestRSSMiB": 1857.59375
+  },
+  {
+    "timestamp": 1789647558.123633,
+    "completedMeasurements": 9,
+    "activeProcesses": 8,
+    "totalRSSMiB": 12661.515625,
+    "largestRSSMiB": 2324.984375
+  },
+  {
+    "timestamp": 1789647559.54754,
+    "completedMeasurements": 9,
+    "activeProcesses": 8,
+    "totalRSSMiB": 14733.765625,
+    "largestRSSMiB": 2233.90625
+  },
+  {
+    "timestamp": 1789647560.670235,
+    "completedMeasurements": 9,
+    "activeProcesses": 8,
+    "totalRSSMiB": 15987.140625,
+    "largestRSSMiB": 2435.296875
+  },
+  {
+    "timestamp": 1789647561.7764502,
+    "completedMeasurements": 9,
+    "activeProcesses": 8,
+    "totalRSSMiB": 16963.09375,
+    "largestRSSMiB": 2934.875
+  },
+  {
+    "timestamp": 1789647562.8437629,
+    "completedMeasurements": 9,
+    "activeProcesses": 8,
+    "totalRSSMiB": 5036.203125,
+    "largestRSSMiB": 1501.328125
+  },
+  {
+    "timestamp": 1789647563.940492,
+    "completedMeasurements": 9,
+    "activeProcesses": 8,
+    "totalRSSMiB": 10626.796875,
+    "largestRSSMiB": 2931.265625
+  },
+  {
+    "timestamp": 1789647565.023361,
+    "completedMeasurements": 9,
+    "activeProcesses": 8,
+    "totalRSSMiB": 13809.875,
+    "largestRSSMiB": 2427.921875
+  },
+  {
+    "timestamp": 1789647566.27697,
+    "completedMeasurements": 9,
+    "activeProcesses": 8,
+    "totalRSSMiB": 14616.578125,
+    "largestRSSMiB": 2576.59375
+  },
+  {
+    "timestamp": 1789647567.5127418,
+    "completedMeasurements": 9,
+    "activeProcesses": 6,
+    "totalRSSMiB": 12108.09375,
+    "largestRSSMiB": 2463.421875
+  },
+  {
+    "timestamp": 1789647568.5937521,
+    "completedMeasurements": 9,
+    "activeProcesses": 7,
+    "totalRSSMiB": 8003.828125,
+    "largestRSSMiB": 3220.609375
+  },
+  {
+    "timestamp": 1789647569.680439,
+    "completedMeasurements": 9,
+    "activeProcesses": 7,
+    "totalRSSMiB": 8161.53125,
+    "largestRSSMiB": 1742.328125
+  },
+  {
+    "timestamp": 1789647570.9545228,
+    "completedMeasurements": 9,
+    "activeProcesses": 7,
+    "totalRSSMiB": 13797.15625,
+    "largestRSSMiB": 2376.90625
+  },
+  {
+    "timestamp": 1789647572.062786,
+    "completedMeasurements": 9,
+    "activeProcesses": 7,
+    "totalRSSMiB": 13843.609375,
+    "largestRSSMiB": 2362.734375
+  },
+  {
+    "timestamp": 1789647573.251501,
+    "completedMeasurements": 9,
+    "activeProcesses": 5,
+    "totalRSSMiB": 12038.28125,
+    "largestRSSMiB": 2852.9375
+  },
+  {
+    "timestamp": 1789647574.287522,
+    "completedMeasurements": 10,
+    "activeProcesses": 0,
+    "totalRSSMiB": 0.0,
+    "largestRSSMiB": 0.0
+  },
+  {
+    "timestamp": 1789647575.343486,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 4103.625,
+    "largestRSSMiB": 1299.34375
+  },
+  {
+    "timestamp": 1789647576.411613,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 10240.671875,
+    "largestRSSMiB": 2560.34375
+  },
+  {
+    "timestamp": 1789647577.476331,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 13915.609375,
+    "largestRSSMiB": 3603.390625
+  },
+  {
+    "timestamp": 1789647578.5146198,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 2651.625,
+    "largestRSSMiB": 698.296875
+  },
+  {
+    "timestamp": 1789647579.567324,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 7424.078125,
+    "largestRSSMiB": 2117.140625
+  },
+  {
+    "timestamp": 1789647580.646125,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 13562.0625,
+    "largestRSSMiB": 3622.703125
+  },
+  {
+    "timestamp": 1789647581.696778,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 1861.25,
+    "largestRSSMiB": 954.421875
+  },
+  {
+    "timestamp": 1789647582.761837,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 7209.734375,
+    "largestRSSMiB": 2579.1875
+  },
+  {
+    "timestamp": 1789647583.842017,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 12639.859375,
+    "largestRSSMiB": 4167.3125
+  },
+  {
+    "timestamp": 1789647584.896102,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 10226.953125,
+    "largestRSSMiB": 3758.796875
+  },
+  {
+    "timestamp": 1789647585.9719198,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 8930.390625,
+    "largestRSSMiB": 3112.921875
+  },
+  {
+    "timestamp": 1789647587.027467,
+    "completedMeasurements": 10,
+    "activeProcesses": 3,
+    "totalRSSMiB": 7013.34375,
+    "largestRSSMiB": 3618.5625
+  },
+  {
+    "timestamp": 1789647588.0954409,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 5176.25,
+    "largestRSSMiB": 2699.953125
+  },
+  {
+    "timestamp": 1789647589.1659572,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 12265.4375,
+    "largestRSSMiB": 3725.078125
+  },
+  {
+    "timestamp": 1789647590.253833,
+    "completedMeasurements": 10,
+    "activeProcesses": 4,
+    "totalRSSMiB": 10299.609375,
+    "largestRSSMiB": 3756.0625
+  },
+  {
+    "timestamp": 1789647591.2955031,
+    "completedMeasurements": 10,
+    "activeProcesses": 3,
+    "totalRSSMiB": 7137.8125,
+    "largestRSSMiB": 3166.734375
+  },
+  {
+    "timestamp": 1789647592.335231,
+    "completedMeasurements": 10,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7231.03125,
+    "largestRSSMiB": 3760.1875
+  },
+  {
+    "timestamp": 1789647593.387579,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 2462.9375,
+    "largestRSSMiB": 621.59375
+  },
+  {
+    "timestamp": 1789647594.4586382,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 8680.890625,
+    "largestRSSMiB": 2341.4375
+  },
+  {
+    "timestamp": 1789647595.532301,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 12546.78125,
+    "largestRSSMiB": 3272.90625
+  },
+  {
+    "timestamp": 1789647596.5901802,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 4630.125,
+    "largestRSSMiB": 1451.421875
+  },
+  {
+    "timestamp": 1789647597.635505,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 10957.765625,
+    "largestRSSMiB": 3152.40625
+  },
+  {
+    "timestamp": 1789647598.695988,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 12314.109375,
+    "largestRSSMiB": 3345.53125
+  },
+  {
+    "timestamp": 1789647599.762917,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 5072.546875,
+    "largestRSSMiB": 1856.53125
+  },
+  {
+    "timestamp": 1789647600.818775,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 11495.140625,
+    "largestRSSMiB": 3618.5625
+  },
+  {
+    "timestamp": 1789647601.86705,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 8524.984375,
+    "largestRSSMiB": 3805.640625
+  },
+  {
+    "timestamp": 1789647602.928952,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 7728.75,
+    "largestRSSMiB": 2496.078125
+  },
+  {
+    "timestamp": 1789647604.041974,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 12135.515625,
+    "largestRSSMiB": 3749.578125
+  },
+  {
+    "timestamp": 1789647605.103508,
+    "completedMeasurements": 11,
+    "activeProcesses": 3,
+    "totalRSSMiB": 2442.65625,
+    "largestRSSMiB": 1038.734375
+  },
+  {
+    "timestamp": 1789647606.178241,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 8537.84375,
+    "largestRSSMiB": 2705.59375
+  },
+  {
+    "timestamp": 1789647607.296523,
+    "completedMeasurements": 11,
+    "activeProcesses": 4,
+    "totalRSSMiB": 13856.171875,
+    "largestRSSMiB": 3808.25
+  },
+  {
+    "timestamp": 1789647608.334177,
+    "completedMeasurements": 11,
+    "activeProcesses": 3,
+    "totalRSSMiB": 1661.25,
+    "largestRSSMiB": 597.875
+  },
+  {
+    "timestamp": 1789647609.373439,
+    "completedMeasurements": 11,
+    "activeProcesses": 3,
+    "totalRSSMiB": 4458.8125,
+    "largestRSSMiB": 1660.296875
+  },
+  {
+    "timestamp": 1789647610.423172,
+    "completedMeasurements": 11,
+    "activeProcesses": 3,
+    "totalRSSMiB": 10316.984375,
+    "largestRSSMiB": 3747.859375
+  },
+  {
+    "timestamp": 1789647611.4601011,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 940.8125,
+    "largestRSSMiB": 471.046875
+  },
+  {
+    "timestamp": 1789647612.500639,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 2430.140625,
+    "largestRSSMiB": 1215.09375
+  },
+  {
+    "timestamp": 1789647613.537557,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7446.90625,
+    "largestRSSMiB": 3724.125
+  },
+  {
+    "timestamp": 1789647614.574087,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 1142.75,
+    "largestRSSMiB": 572.25
+  },
+  {
+    "timestamp": 1789647615.623562,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 3597.515625,
+    "largestRSSMiB": 1807.828125
+  },
+  {
+    "timestamp": 1789647616.660189,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7678.8125,
+    "largestRSSMiB": 3855.234375
+  },
+  {
+    "timestamp": 1789647617.6973948,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 2206.8125,
+    "largestRSSMiB": 1539.890625
+  },
+  {
+    "timestamp": 1789647618.749412,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 6312.8125,
+    "largestRSSMiB": 3760.09375
+  },
+  {
+    "timestamp": 1789647619.783673,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 4511.546875,
+    "largestRSSMiB": 3903.53125
+  },
+  {
+    "timestamp": 1789647620.828613,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 3446.4375,
+    "largestRSSMiB": 1746.625
+  },
+  {
+    "timestamp": 1789647621.8679192,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7251.359375,
+    "largestRSSMiB": 3657.671875
+  },
+  {
+    "timestamp": 1789647622.910943,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 3365.359375,
+    "largestRSSMiB": 1885.15625
+  },
+  {
+    "timestamp": 1789647623.960062,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7520.921875,
+    "largestRSSMiB": 3992.015625
+  },
+  {
+    "timestamp": 1789647624.997205,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 1222.953125,
+    "largestRSSMiB": 1212.015625
+  },
+  {
+    "timestamp": 1789647626.0353742,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 4764.75,
+    "largestRSSMiB": 2497.609375
+  },
+  {
+    "timestamp": 1789647627.073154,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 3782.40625,
+    "largestRSSMiB": 3758.78125
+  },
+  {
+    "timestamp": 1789647628.113558,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 4986.515625,
+    "largestRSSMiB": 2594.75
+  },
+  {
+    "timestamp": 1789647629.1653981,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7396.21875,
+    "largestRSSMiB": 3850.71875
+  },
+  {
+    "timestamp": 1789647630.209545,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 4017.53125,
+    "largestRSSMiB": 2197.6875
+  },
+  {
+    "timestamp": 1789647631.249559,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7660.15625,
+    "largestRSSMiB": 4013.109375
+  },
+  {
+    "timestamp": 1789647632.2947168,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 2694.453125,
+    "largestRSSMiB": 1433.125
+  },
+  {
+    "timestamp": 1789647633.3370528,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7342.09375,
+    "largestRSSMiB": 3854.84375
+  },
+  {
+    "timestamp": 1789647634.375367,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 3023.375,
+    "largestRSSMiB": 1609.984375
+  },
+  {
+    "timestamp": 1789647635.422401,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7166.3125,
+    "largestRSSMiB": 3965.140625
+  },
+  {
+    "timestamp": 1789647636.45951,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 1423.59375,
+    "largestRSSMiB": 1412.515625
+  },
+  {
+    "timestamp": 1789647637.498102,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 5687.015625,
+    "largestRSSMiB": 3502.234375
+  },
+  {
+    "timestamp": 1789647638.538181,
+    "completedMeasurements": 12,
+    "activeProcesses": 2,
+    "totalRSSMiB": 4711.671875,
+    "largestRSSMiB": 3726.15625
+  },
+  {
+    "timestamp": 1789647639.57465,
+    "completedMeasurements": 12,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3216.546875,
+    "largestRSSMiB": 3216.546875
+  },
+  {
+    "timestamp": 1789647640.618203,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 2794.75,
+    "largestRSSMiB": 1398.578125
+  },
+  {
+    "timestamp": 1789647641.6554601,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 5757.5625,
+    "largestRSSMiB": 2880.671875
+  },
+  {
+    "timestamp": 1789647642.695895,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 300.828125,
+    "largestRSSMiB": 150.46875
+  },
+  {
+    "timestamp": 1789647643.7331,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 4807.34375,
+    "largestRSSMiB": 2403.734375
+  },
+  {
+    "timestamp": 1789647644.770667,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7559.078125,
+    "largestRSSMiB": 3780.53125
+  },
+  {
+    "timestamp": 1789647645.81872,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 4768.859375,
+    "largestRSSMiB": 2387.25
+  },
+  {
+    "timestamp": 1789647646.8525372,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7301.203125,
+    "largestRSSMiB": 3651.046875
+  },
+  {
+    "timestamp": 1789647647.89998,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 3224.234375,
+    "largestRSSMiB": 1828.015625
+  },
+  {
+    "timestamp": 1789647648.9600482,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7601.046875,
+    "largestRSSMiB": 3842.25
+  },
+  {
+    "timestamp": 1789647649.998992,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 2158.984375,
+    "largestRSSMiB": 1163.078125
+  },
+  {
+    "timestamp": 1789647651.04578,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 6980.390625,
+    "largestRSSMiB": 3686.234375
+  },
+  {
+    "timestamp": 1789647652.079741,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 1034.359375,
+    "largestRSSMiB": 1023.8125
+  },
+  {
+    "timestamp": 1789647653.1207209,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 4312.546875,
+    "largestRSSMiB": 2503.4375
+  },
+  {
+    "timestamp": 1789647654.154498,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7555.421875,
+    "largestRSSMiB": 3901.96875
+  },
+  {
+    "timestamp": 1789647655.191725,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 3878.84375,
+    "largestRSSMiB": 2238.125
+  },
+  {
+    "timestamp": 1789647656.233859,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7290.859375,
+    "largestRSSMiB": 3653.625
+  },
+  {
+    "timestamp": 1789647657.276984,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 4063.21875,
+    "largestRSSMiB": 2392.421875
+  },
+  {
+    "timestamp": 1789647658.3181,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 7205.328125,
+    "largestRSSMiB": 3613.765625
+  },
+  {
+    "timestamp": 1789647659.3625789,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 3539.4375,
+    "largestRSSMiB": 2048.6875
+  },
+  {
+    "timestamp": 1789647660.400052,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 6847.84375,
+    "largestRSSMiB": 3508.296875
+  },
+  {
+    "timestamp": 1789647661.438682,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 2845.625,
+    "largestRSSMiB": 1652.78125
+  },
+  {
+    "timestamp": 1789647662.4967701,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 6994.171875,
+    "largestRSSMiB": 3597.671875
+  },
+  {
+    "timestamp": 1789647663.5360599,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 2162.625,
+    "largestRSSMiB": 1707.921875
+  },
+  {
+    "timestamp": 1789647664.574155,
+    "completedMeasurements": 13,
+    "activeProcesses": 2,
+    "totalRSSMiB": 6282.4375,
+    "largestRSSMiB": 3500.28125
+  },
+  {
+    "timestamp": 1789647665.610799,
+    "completedMeasurements": 13,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1577.21875,
+    "largestRSSMiB": 1577.21875
+  },
+  {
+    "timestamp": 1789647666.650193,
+    "completedMeasurements": 13,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3539.109375,
+    "largestRSSMiB": 3539.109375
+  },
+  {
+    "timestamp": 1789647667.686626,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1547.796875,
+    "largestRSSMiB": 1547.796875
+  },
+  {
+    "timestamp": 1789647668.722641,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3382.171875,
+    "largestRSSMiB": 3382.171875
+  },
+  {
+    "timestamp": 1789647669.7605429,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1594.09375,
+    "largestRSSMiB": 1594.09375
+  },
+  {
+    "timestamp": 1789647670.7955148,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3782.953125,
+    "largestRSSMiB": 3782.953125
+  },
+  {
+    "timestamp": 1789647671.83113,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1604.953125,
+    "largestRSSMiB": 1604.953125
+  },
+  {
+    "timestamp": 1789647672.8671958,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3720.1875,
+    "largestRSSMiB": 3720.1875
+  },
+  {
+    "timestamp": 1789647673.9022841,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1895.234375,
+    "largestRSSMiB": 1895.234375
+  },
+  {
+    "timestamp": 1789647674.939782,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3593.65625,
+    "largestRSSMiB": 3593.65625
+  },
+  {
+    "timestamp": 1789647675.975272,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1853.703125,
+    "largestRSSMiB": 1853.703125
+  },
+  {
+    "timestamp": 1789647677.009397,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3654.546875,
+    "largestRSSMiB": 3654.546875
+  },
+  {
+    "timestamp": 1789647678.0465941,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2366.59375,
+    "largestRSSMiB": 2366.59375
+  },
+  {
+    "timestamp": 1789647679.084629,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3777.890625,
+    "largestRSSMiB": 3777.890625
+  },
+  {
+    "timestamp": 1789647680.1208398,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2470.640625,
+    "largestRSSMiB": 2470.640625
+  },
+  {
+    "timestamp": 1789647681.157351,
+    "completedMeasurements": 14,
+    "activeProcesses": 0,
+    "totalRSSMiB": 0.0,
+    "largestRSSMiB": 0.0
+  },
+  {
+    "timestamp": 1789647682.195992,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2403.171875,
+    "largestRSSMiB": 2403.171875
+  },
+  {
+    "timestamp": 1789647683.23266,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 17.25,
+    "largestRSSMiB": 17.25
+  },
+  {
+    "timestamp": 1789647684.2696471,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2963.4375,
+    "largestRSSMiB": 2963.4375
+  },
+  {
+    "timestamp": 1789647685.307144,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1244.90625,
+    "largestRSSMiB": 1244.90625
+  },
+  {
+    "timestamp": 1789647686.3453639,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2831.765625,
+    "largestRSSMiB": 2831.765625
+  },
+  {
+    "timestamp": 1789647687.382109,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 956.40625,
+    "largestRSSMiB": 956.40625
+  },
+  {
+    "timestamp": 1789647688.420025,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1629.921875,
+    "largestRSSMiB": 1629.921875
+  },
+  {
+    "timestamp": 1789647689.459747,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3950.21875,
+    "largestRSSMiB": 3950.21875
+  },
+  {
+    "timestamp": 1789647690.4962199,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1214.640625,
+    "largestRSSMiB": 1214.640625
+  },
+  {
+    "timestamp": 1789647691.532779,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3856.59375,
+    "largestRSSMiB": 3856.59375
+  },
+  {
+    "timestamp": 1789647692.569509,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1912.953125,
+    "largestRSSMiB": 1912.953125
+  },
+  {
+    "timestamp": 1789647693.603948,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3640.390625,
+    "largestRSSMiB": 3640.390625
+  },
+  {
+    "timestamp": 1789647694.639908,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2186.1875,
+    "largestRSSMiB": 2186.1875
+  },
+  {
+    "timestamp": 1789647695.685297,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3755.796875,
+    "largestRSSMiB": 3755.796875
+  },
+  {
+    "timestamp": 1789647696.720972,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2117.296875,
+    "largestRSSMiB": 2117.296875
+  },
+  {
+    "timestamp": 1789647697.761062,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3780.796875,
+    "largestRSSMiB": 3780.796875
+  },
+  {
+    "timestamp": 1789647698.799444,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2856.9375,
+    "largestRSSMiB": 2856.9375
+  },
+  {
+    "timestamp": 1789647699.83724,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 11.046875,
+    "largestRSSMiB": 11.046875
+  },
+  {
+    "timestamp": 1789647700.873058,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2760.359375,
+    "largestRSSMiB": 2760.359375
+  },
+  {
+    "timestamp": 1789647701.914007,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 698.171875,
+    "largestRSSMiB": 698.171875
+  },
+  {
+    "timestamp": 1789647702.948606,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2913.84375,
+    "largestRSSMiB": 2913.84375
+  },
+  {
+    "timestamp": 1789647703.988831,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 459.890625,
+    "largestRSSMiB": 459.890625
+  },
+  {
+    "timestamp": 1789647705.029259,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3192.46875,
+    "largestRSSMiB": 3192.46875
+  },
+  {
+    "timestamp": 1789647706.066444,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 673.484375,
+    "largestRSSMiB": 673.484375
+  },
+  {
+    "timestamp": 1789647707.109688,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3285.390625,
+    "largestRSSMiB": 3285.390625
+  },
+  {
+    "timestamp": 1789647708.1489332,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 415.921875,
+    "largestRSSMiB": 415.921875
+  },
+  {
+    "timestamp": 1789647709.186261,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3021.84375,
+    "largestRSSMiB": 3021.84375
+  },
+  {
+    "timestamp": 1789647710.2238479,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 572.125,
+    "largestRSSMiB": 572.125
+  },
+  {
+    "timestamp": 1789647711.260902,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2715.609375,
+    "largestRSSMiB": 2715.609375
+  },
+  {
+    "timestamp": 1789647712.294065,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1079.15625,
+    "largestRSSMiB": 1079.15625
+  },
+  {
+    "timestamp": 1789647713.332751,
+    "completedMeasurements": 14,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3376.546875,
+    "largestRSSMiB": 3376.546875
+  },
+  {
+    "timestamp": 1789647714.3704388,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1223.71875,
+    "largestRSSMiB": 1223.71875
+  },
+  {
+    "timestamp": 1789647715.407304,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3214.0625,
+    "largestRSSMiB": 3214.0625
+  },
+  {
+    "timestamp": 1789647716.447277,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1100.875,
+    "largestRSSMiB": 1100.875
+  },
+  {
+    "timestamp": 1789647717.4853382,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2958.875,
+    "largestRSSMiB": 2958.875
+  },
+  {
+    "timestamp": 1789647718.525623,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 511.5,
+    "largestRSSMiB": 511.5
+  },
+  {
+    "timestamp": 1789647719.563367,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2991.890625,
+    "largestRSSMiB": 2991.890625
+  },
+  {
+    "timestamp": 1789647720.5992918,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 591.5,
+    "largestRSSMiB": 591.5
+  },
+  {
+    "timestamp": 1789647721.634392,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2714.984375,
+    "largestRSSMiB": 2714.984375
+  },
+  {
+    "timestamp": 1789647722.6755369,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 511.609375,
+    "largestRSSMiB": 511.609375
+  },
+  {
+    "timestamp": 1789647723.7110772,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2452.40625,
+    "largestRSSMiB": 2452.40625
+  },
+  {
+    "timestamp": 1789647724.7477949,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 12.796875,
+    "largestRSSMiB": 12.796875
+  },
+  {
+    "timestamp": 1789647725.783819,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2871.078125,
+    "largestRSSMiB": 2871.078125
+  },
+  {
+    "timestamp": 1789647726.820309,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 939.4375,
+    "largestRSSMiB": 939.4375
+  },
+  {
+    "timestamp": 1789647727.858701,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3321.296875,
+    "largestRSSMiB": 3321.296875
+  },
+  {
+    "timestamp": 1789647728.895766,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 623.015625,
+    "largestRSSMiB": 623.015625
+  },
+  {
+    "timestamp": 1789647729.9326642,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3426.171875,
+    "largestRSSMiB": 3426.171875
+  },
+  {
+    "timestamp": 1789647730.9691038,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1151.96875,
+    "largestRSSMiB": 1151.96875
+  },
+  {
+    "timestamp": 1789647732.005078,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3177.09375,
+    "largestRSSMiB": 3177.09375
+  },
+  {
+    "timestamp": 1789647733.0386088,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1516.625,
+    "largestRSSMiB": 1516.625
+  },
+  {
+    "timestamp": 1789647734.0772421,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3372.265625,
+    "largestRSSMiB": 3372.265625
+  },
+  {
+    "timestamp": 1789647735.111715,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 759.171875,
+    "largestRSSMiB": 759.171875
+  },
+  {
+    "timestamp": 1789647736.148614,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2182.796875,
+    "largestRSSMiB": 2182.796875
+  },
+  {
+    "timestamp": 1789647737.1904519,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3724.359375,
+    "largestRSSMiB": 3724.359375
+  },
+  {
+    "timestamp": 1789647738.227037,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2610.53125,
+    "largestRSSMiB": 2610.53125
+  },
+  {
+    "timestamp": 1789647739.2625332,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 10.96875,
+    "largestRSSMiB": 10.96875
+  },
+  {
+    "timestamp": 1789647740.303659,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3203.984375,
+    "largestRSSMiB": 3203.984375
+  },
+  {
+    "timestamp": 1789647741.338518,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 810.421875,
+    "largestRSSMiB": 810.421875
+  },
+  {
+    "timestamp": 1789647742.376624,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2886.75,
+    "largestRSSMiB": 2886.75
+  },
+  {
+    "timestamp": 1789647743.4129999,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1386.359375,
+    "largestRSSMiB": 1386.359375
+  },
+  {
+    "timestamp": 1789647744.449582,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3445.046875,
+    "largestRSSMiB": 3445.046875
+  },
+  {
+    "timestamp": 1789647745.491837,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1630.5625,
+    "largestRSSMiB": 1630.5625
+  },
+  {
+    "timestamp": 1789647746.531678,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3709.796875,
+    "largestRSSMiB": 3709.796875
+  },
+  {
+    "timestamp": 1789647747.570061,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1696.46875,
+    "largestRSSMiB": 1696.46875
+  },
+  {
+    "timestamp": 1789647748.609083,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3361.4375,
+    "largestRSSMiB": 3361.4375
+  },
+  {
+    "timestamp": 1789647749.6483111,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1519.140625,
+    "largestRSSMiB": 1519.140625
+  },
+  {
+    "timestamp": 1789647750.6883352,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3650.75,
+    "largestRSSMiB": 3650.75
+  },
+  {
+    "timestamp": 1789647751.7256188,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1192.140625,
+    "largestRSSMiB": 1192.140625
+  },
+  {
+    "timestamp": 1789647752.762002,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3581.0,
+    "largestRSSMiB": 3581.0
+  },
+  {
+    "timestamp": 1789647753.800242,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1211.6875,
+    "largestRSSMiB": 1211.6875
+  },
+  {
+    "timestamp": 1789647754.8399382,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3667.1875,
+    "largestRSSMiB": 3667.1875
+  },
+  {
+    "timestamp": 1789647755.8786829,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1292.28125,
+    "largestRSSMiB": 1292.28125
+  },
+  {
+    "timestamp": 1789647756.9169521,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 2852.453125,
+    "largestRSSMiB": 2852.453125
+  },
+  {
+    "timestamp": 1789647757.954515,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1043.3125,
+    "largestRSSMiB": 1043.3125
+  },
+  {
+    "timestamp": 1789647758.992042,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3370.0,
+    "largestRSSMiB": 3370.0
+  },
+  {
+    "timestamp": 1789647760.026749,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 1131.578125,
+    "largestRSSMiB": 1131.578125
+  },
+  {
+    "timestamp": 1789647761.067713,
+    "completedMeasurements": 15,
+    "activeProcesses": 1,
+    "totalRSSMiB": 3527.765625,
+    "largestRSSMiB": 3527.765625
+  },
+  {
+    "timestamp": 1789647762.1076522,
+    "completedMeasurements": 16,
+    "activeProcesses": 0,
+    "totalRSSMiB": 0.0,
+    "largestRSSMiB": 0.0
+  }
+]

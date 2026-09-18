@@ -1,285 +1,212 @@
 import AppKit
 import Foundation
 import Observation
-import SwiftUI
 
 @MainActor
 @Observable
 final class ConversionStore {
-    var inputs: [ImageInput] = []
-    var jobs: [ConversionJob] = []
+    private(set) var inputs: [ImageInput] = []
+    private(set) var jobs: [ConversionJob] = []
     var settings = ConversionSettings()
     var selectedInputID: ImageInput.ID?
     var isAdvancedVisible = true
     var isCollectionExpanded = false
-    var isConverting = false
-    var progress: Double = 0
-    var statusMessage = L10n.text("ready")
-    var logText = L10n.text("no_backend_output")
+    private(set) var isConverting = false
+    private(set) var isCancelling = false
+    private(set) var isImporting = false
+    private(set) var progress: Double = 0
+    private(set) var statusMessage = L10n.text("ready")
+    private(set) var logText = L10n.text("no_backend_output")
+    var presentedError: String?
 
-    @ObservationIgnored private let backend: BackendConverting
+    @ObservationIgnored private let scheduler: ConversionScheduler
+    @ObservationIgnored private let files = FileAccessService()
     @ObservationIgnored private var conversionTask: Task<Void, Never>?
-    @ObservationIgnored private var logLines: [String] = []
-    @ObservationIgnored private var pendingLogLines: [String] = []
-    @ObservationIgnored private var logFlushTask: Task<Void, Never>?
-    @ObservationIgnored private var completedJobCount = 0
+    @ObservationIgnored private var importTask: Task<Void, Never>?
+    @ObservationIgnored private var jobIndices: [UUID: Int] = [:]
+    @ObservationIgnored private var lastOutputURL: URL?
+    @ObservationIgnored private var pendingInputURLs: [URL] = []
 
-    init(backend: BackendConverting = BackendProcessService()) {
-        self.backend = backend
+    init(backend: any BackendConverting = BackendProcessService()) {
+        scheduler = ConversionScheduler(backend: backend)
     }
 
-    var canConvert: Bool {
-        !inputs.isEmpty && outputURL != nil && !isConverting
-    }
-
-    var outputURL: URL? {
-        ConversionRequest(inputs: inputs, settings: settings).outputURL
-    }
-
+    var canConvert: Bool { !inputs.isEmpty && outputURL != nil && !isConverting && !isImporting }
+    var canImport: Bool { !isConverting && !isImporting }
+    var outputURL: URL? { ConversionRequest(inputs: inputs, settings: settings).outputURL }
     var representativeConversionCommand: ConversionCommand? {
         ConversionRequest(inputs: inputs, settings: settings).representativeCommand()
     }
-
-    var representativeCommand: String {
-        representativeConversionCommand?.displayString ?? L10n.text("add_images_to_build_command")
-    }
-
-    var modeTitle: String {
-        inputs.count > 1 ? L10n.text("batch_queue") : L10n.text("single_image")
-    }
-
-    var collectionSummaryTitle: String {
-        String(format: L10n.text("images_selected"), inputs.count)
-    }
+    var representativeCommand: String { representativeConversionCommand?.displayString ?? L10n.text("add_images_to_build_command") }
+    var modeTitle: String { L10n.text(inputs.count > 1 ? "batch_queue" : "single_image") }
+    var collectionSummaryTitle: String { String(format: L10n.text("images_selected"), inputs.count) }
 
     func pickInputImages() {
-        addInputURLs(FilePanelService.pickImages())
+        guard canImport else { return }
+        isImporting = true
+        importTask = Task {
+            let urls = await FilePanelService.pickImages()
+            await performImport(urls)
+        }
     }
 
     func pickInputFolder() {
-        guard let folder = FilePanelService.pickFolder(title: L10n.text("add_folder"), prompt: L10n.text("add_folder")) else { return }
-        statusMessage = L10n.text("scanning_folder")
-
-        Task { [weak self] in
-            let urls = await Task.detached(priority: .userInitiated) {
-                FilePanelService.imageFiles(in: folder)
-            }.value
-            guard let self else { return }
-            self.addInputURLs(urls)
-            if urls.isEmpty {
-                self.statusMessage = L10n.text("ready")
-            }
+        guard canImport else { return }
+        isImporting = true
+        importTask = Task {
+            let folder = await FilePanelService.pickFolder(title: L10n.text("add_folder"), prompt: L10n.text("add_folder"))
+            await performImport(folder.map { [$0] } ?? [])
         }
     }
 
     func pickOutputFolder() {
-        guard let folder = FilePanelService.pickFolder(title: L10n.text("choose_folder")) else { return }
-        settings.destinationChoice = .custom
-        settings.customDestination = folder
-    }
-
-    func addInputURLs(_ urls: [URL]) {
-        let existing = Set(inputs.map(\.url))
-        let newInputs = urls
-            .filter { !existing.contains($0) }
-            .map(ImageInput.init(url:))
-
-        guard !newInputs.isEmpty else { return }
-
-        withAnimation(.snappy(duration: 0.22)) {
-            inputs.append(contentsOf: newInputs)
-            selectedInputID = inputs.first?.id
-            isCollectionExpanded = true
-            statusMessage = readyMessage(for: inputs.count)
-        }
-    }
-
-    func removeSelectedInput() {
-        guard let selectedInputID else { return }
-        removeInput(id: selectedInputID)
-    }
-
-    func removeInput(id: ImageInput.ID) {
-        withAnimation(.snappy(duration: 0.18)) {
-            inputs.removeAll { $0.id == id }
-            if self.selectedInputID == id {
-                self.selectedInputID = inputs.first?.id
+        guard canImport else { return }
+        isImporting = true
+        importTask = Task {
+            if let folder = await FilePanelService.pickFolder(), !Task.isCancelled {
+                await files.retainAccess(to: folder)
+                settings.destinationChoice = .custom
+                settings.customDestination = folder
             }
-            statusMessage = inputs.isEmpty ? L10n.text("ready") : readyMessage(for: inputs.count)
+            finishImport()
         }
+    }
+
+    /// Shared entry point for native panels, Finder open events, and Transferable drops.
+    func addInputURLs(_ urls: [URL]) {
+        guard !urls.isEmpty else { return }
+        guard !isConverting else { presentedError = L10n.text("import_while_converting"); return }
+        if isImporting { pendingInputURLs.append(contentsOf: urls); return }
+        isImporting = true
+        importTask = Task { await performImport(urls) }
+    }
+
+    private func performImport(_ urls: [URL]) async {
+        if !urls.isEmpty { statusMessage = L10n.text("scanning_folder") }
+        defer { finishImport() }
+        do {
+            let imported = try await files.importFiles(urls)
+            try Task.checkCancellation()
+            var existing = Set(inputs.map(\.url))
+            let additions = imported.filter { existing.insert($0).inserted }.map(ImageInput.init(url:))
+            inputs.append(contentsOf: additions)
+            if selectedInputID == nil { selectedInputID = inputs.first?.id }
+            isCollectionExpanded = true
+            statusMessage = readyMessage
+        } catch {
+            statusMessage = Task.isCancelled ? L10n.text("cancelled") : error.localizedDescription
+            if !Task.isCancelled { presentedError = error.localizedDescription }
+        }
+    }
+
+    private func finishImport() {
+        isImporting = false
+        importTask = nil
+        let pending = pendingInputURLs
+        pendingInputURLs.removeAll()
+        if !Task.isCancelled { addInputURLs(pending) }
+    }
+
+    func removeSelectedInput() { if let selectedInputID { removeInput(id: selectedInputID) } }
+    func removeInput(id: ImageInput.ID) {
+        guard canImport else { return }
+        inputs.removeAll { $0.id == id }
+        if selectedInputID == id { selectedInputID = inputs.first?.id }
+        statusMessage = readyMessage
     }
 
     func clearInputs() {
-        withAnimation(.snappy(duration: 0.2)) {
-            inputs.removeAll()
-            jobs.removeAll()
-            selectedInputID = nil
-            progress = 0
-            completedJobCount = 0
-            statusMessage = L10n.text("ready")
+        guard canImport else { return }
+        inputs.removeAll(); jobs.removeAll(); jobIndices.removeAll()
+        selectedInputID = nil
+        progress = 0
+        statusMessage = readyMessage
+        // Retain the explicitly chosen output grant while releasing all source grants.
+        let destination = settings.customDestination
+        isImporting = true
+        importTask = Task {
+            await files.releaseAccess()
+            if let destination { await files.retainAccess(to: destination) }
+            finishImport()
         }
     }
 
     func revealOutputFolder() {
-        guard let outputURL else { return }
-        NSWorkspace.shared.activateFileViewerSelecting([outputURL])
+        guard let url = lastOutputURL ?? outputURL else { return }
+        NSWorkspace.shared.activateFileViewerSelecting([url])
     }
 
     func startConversion() {
         guard canConvert else { return }
         settings.clampValues()
         let request = ConversionRequest(inputs: inputs, settings: settings)
-        let workerCount = min(max(settings.concurrency, 1), inputs.count)
         jobs = inputs.map { ConversionJob(input: $0) }
-        resetLogs()
-        completedJobCount = 0
+        jobIndices = Dictionary(uniqueKeysWithValues: jobs.enumerated().map { ($0.element.input.id, $0.offset) })
+        let events = ConversionEventBuffer(inputs: inputs)
+        logText = L10n.text("no_backend_output")
         isConverting = true
+        isCancelling = false
+        lastOutputURL = request.outputURL
         progress = 0
-        statusMessage = inputs.count == 1 ? L10n.text("converting_image") : String(format: L10n.text("converting_images"), inputs.count)
-
-        conversionTask = Task { [weak self] in
-            guard let self else { return }
-            let queue = WorkQueue(request.inputs)
-
+        statusMessage = L10n.text("converting_image")
+        let scheduler = self.scheduler
+        conversionTask = Task {
             await withTaskGroup(of: Void.self) { group in
-                for _ in 0..<workerCount {
-                    group.addTask {
-                        while !Task.isCancelled {
-                            guard let input = await queue.next() else { break }
-                            await self.run(input: input, request: request)
-                        }
-                    }
+                group.addTask { await scheduler.run(request, events: events) }
+                while !Task.isCancelled {
+                    let update = await events.drain()
+                    apply(update)
+                    if update.finished { break }
+                    do { try await Task.sleep(for: .milliseconds(100)) } catch { break }
                 }
+                if Task.isCancelled { group.cancelAll() }
+                await group.waitForAll()
             }
-
-            await MainActor.run {
-                guard !Task.isCancelled else { return }
-                self.flushPendingLogs()
-                self.isConverting = false
-                self.progress = 1
-                self.statusMessage = self.jobs.contains { if case .failed = $0.status { true } else { false } }
-                    ? L10n.text("completed_with_errors")
-                    : L10n.text("conversion_finished")
+            apply(await events.drain())
+            for index in jobs.indices where jobs[index].status == .queued || jobs[index].status == .running {
+                jobs[index].status = .cancelled
             }
+            let cancelled = jobs.contains { $0.status == .cancelled }
+            isConverting = false
+            isCancelling = false
+            conversionTask = nil
+            let failed = jobs.contains { if case .failed = $0.status { true } else { false } }
+            statusMessage = L10n.text(cancelled ? "cancelled" : failed ? "completed_with_errors" : "conversion_finished")
         }
     }
 
     func cancelConversion() {
+        guard isConverting, !isCancelling else { return }
+        isCancelling = true
+        statusMessage = L10n.text("cancelling")
         conversionTask?.cancel()
-        backend.cancel()
-        for index in jobs.indices where jobs[index].status == .queued || jobs[index].status == .running {
-            if updateJob(at: index, status: .cancelled) {
-                markJobCompleted()
-            }
+    }
+
+    func waitUntilFinished() async { await conversionTask?.value }
+    func waitUntilImported() async { while let task = importTask { await task.value } }
+
+    func shutdown() async {
+        pendingInputURLs.removeAll()
+        importTask?.cancel()
+        cancelConversion()
+        await importTask?.value
+        await conversionTask?.value
+        await files.releaseAccess()
+    }
+
+    private func apply(_ update: ConversionUpdate) {
+        for (id, status) in update.statuses {
+            if let index = jobIndices[id] { jobs[index].status = status }
         }
-        flushPendingLogs()
-        isConverting = false
-        statusMessage = L10n.text("cancelled")
-    }
-
-    private func run(input: ImageInput, request: ConversionRequest) async {
-        guard let command = request.command(for: input) else { return }
-        _ = updateJob(for: input, status: .running)
-        appendLog(String(format: L10n.text("starting_file"), input.displayName))
-
-        do {
-            try await backend.run(command: command) { [weak self] text in
-                Task { @MainActor in
-                    self?.enqueueLog(text)
-                }
-            }
-            if updateJob(for: input, status: .finished) {
-                markJobCompleted()
-            }
-            appendLog(String(format: L10n.text("finished_file"), input.displayName))
-        } catch {
-            if Task.isCancelled {
-                if updateJob(for: input, status: .cancelled) {
-                    markJobCompleted()
-                }
-            } else {
-                if updateJob(for: input, status: .failed(error.localizedDescription)) {
-                    markJobCompleted()
-                }
-                appendLog("\(input.displayName): \(error.localizedDescription)")
-            }
+        if let log = update.log { logText = log }
+        let completed = jobs.reduce(0) { count, job in
+            switch job.status { case .finished, .failed: count + 1; default: count }
         }
+        progress = jobs.isEmpty ? 0 : Double(completed) / Double(jobs.count)
+        if !isCancelling { statusMessage = String(format: L10n.text("batch_progress"), completed, jobs.count) }
     }
 
-    private func updateJob(for input: ImageInput, status: JobStatus) -> Bool {
-        guard let index = jobs.firstIndex(where: { $0.input.id == input.id }) else { return false }
-        return updateJob(at: index, status: status)
-    }
-
-    private func updateJob(at index: Int, status: JobStatus) -> Bool {
-        let wasTerminal = jobs[index].status.isTerminal
-        jobs[index].status = status
-        return !wasTerminal && status.isTerminal
-    }
-
-    private func readyMessage(for count: Int) -> String {
-        count == 1 ? L10n.text("image_ready") : String(format: L10n.text("images_ready"), count)
-    }
-
-    private func resetLogs() {
-        logFlushTask?.cancel()
-        logFlushTask = nil
-        pendingLogLines.removeAll()
-        logLines.removeAll()
-        logText = L10n.text("no_backend_output")
-    }
-
-    private func enqueueLog(_ text: String) {
-        guard !text.isEmpty else { return }
-        pendingLogLines.append(text)
-
-        guard logFlushTask == nil else { return }
-        logFlushTask = Task { [weak self] in
-            try? await Task.sleep(for: .milliseconds(100))
-            await MainActor.run {
-                self?.flushPendingLogs()
-            }
-        }
-    }
-
-    private func appendLog(_ text: String) {
-        guard !text.isEmpty else { return }
-        logLines.append(text)
-        if logLines.count > 200 {
-            logLines.removeFirst(logLines.count - 200)
-        }
-        logText = logLines.isEmpty ? L10n.text("no_backend_output") : logLines.joined(separator: "\n")
-    }
-
-    private func flushPendingLogs() {
-        logFlushTask?.cancel()
-        logFlushTask = nil
-        guard !pendingLogLines.isEmpty else { return }
-        appendLog(pendingLogLines.joined(separator: "\n"))
-        pendingLogLines.removeAll(keepingCapacity: true)
-    }
-
-    private func markJobCompleted() {
-        completedJobCount += 1
-        updateProgressFromCompletedCount()
-    }
-
-    private func updateProgressFromCompletedCount() {
-        guard !jobs.isEmpty else {
-            progress = 0
-            return
-        }
-        progress = Double(completedJobCount) / Double(jobs.count)
-    }
-}
-
-private extension JobStatus {
-    var isTerminal: Bool {
-        switch self {
-        case .finished, .failed, .cancelled:
-            return true
-        case .queued, .running:
-            return false
-        }
+    private var readyMessage: String {
+        inputs.isEmpty ? L10n.text("ready") : inputs.count == 1 ? L10n.text("image_ready") : String(format: L10n.text("images_ready"), inputs.count)
     }
 }

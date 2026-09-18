@@ -1,0 +1,130 @@
+[
+  {
+    "images" : 12,
+    "imagesPerSecond" : 2.5488356696593688,
+    "repeat" : 0,
+    "seconds" : 4.7080320410000001,
+    "variant" : "legacy",
+    "workers" : 1
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 2.5157997908379151,
+    "repeat" : 0,
+    "seconds" : 4.7698549159999999,
+    "variant" : "scheduler",
+    "workers" : 1
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 4.6689218111503603,
+    "repeat" : 0,
+    "seconds" : 2.570186541,
+    "variant" : "legacy",
+    "workers" : 2
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 4.5765863109756602,
+    "repeat" : 0,
+    "seconds" : 2.622041667,
+    "variant" : "scheduler",
+    "workers" : 2
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 7.3861793592322842,
+    "repeat" : 0,
+    "seconds" : 1.6246559170000001,
+    "variant" : "legacy",
+    "workers" : 4
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 6.422915819508602,
+    "repeat" : 0,
+    "seconds" : 1.868310334,
+    "variant" : "scheduler",
+    "workers" : 4
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 8.1280972300764098,
+    "repeat" : 0,
+    "seconds" : 1.4763602920000001,
+    "variant" : "legacy",
+    "workers" : 8
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 7.5609233210536591,
+    "repeat" : 0,
+    "seconds" : 1.5871077499999999,
+    "variant" : "scheduler",
+    "workers" : 8
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 7.6784176316944599,
+    "repeat" : 1,
+    "seconds" : 1.5628220000000002,
+    "variant" : "scheduler",
+    "workers" : 8
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 7.6461980936337079,
+    "repeat" : 1,
+    "seconds" : 1.5694074169999999,
+    "variant" : "legacy",
+    "workers" : 8
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 6.8428307481771684,
+    "repeat" : 1,
+    "seconds" : 1.753660209,
+    "variant" : "scheduler",
+    "workers" : 4
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 7.0106229194059519,
+    "repeat" : 1,
+    "seconds" : 1.711688125,
+    "variant" : "legacy",
+    "workers" : 4
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 4.5283144891771165,
+    "repeat" : 1,
+    "seconds" : 2.6499926249999999,
+    "variant" : "scheduler",
+    "workers" : 2
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 4.5214929160110717,
+    "repeat" : 1,
+    "seconds" : 2.653990667,
+    "variant" : "legacy",
+    "workers" : 2
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 2.4467329876261652,
+    "repeat" : 1,
+    "seconds" : 4.9044992079999998,
+    "variant" : "scheduler",
+    "workers" : 1
+  },
+  {
+    "images" : 12,
+    "imagesPerSecond" : 2.4889152529541612,
+    "repeat" : 1,
+    "seconds" : 4.8213774999999996,
+    "variant" : "legacy",
+    "workers" : 1
+  }
+]

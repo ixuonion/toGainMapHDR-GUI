@@ -1,6 +1,6 @@
 import Foundation
 
-enum JobStatus: Equatable {
+enum JobStatus: Equatable, Sendable {
     case queued
     case running
     case finished
@@ -18,7 +18,7 @@ enum JobStatus: Equatable {
     }
 }
 
-struct ConversionJob: Identifiable, Equatable {
+struct ConversionJob: Identifiable, Equatable, Sendable {
     let id = UUID()
     let input: ImageInput
     var status: JobStatus = .queued

@@ -1,0 +1,32 @@
+{
+  "status": "Concept previews only. Await user selection before final production artwork and app integration.",
+  "method": "Built-in image_gen tool",
+  "concepts": [
+    {
+      "name": "A 光层",
+      "file": "A-light-layers.png",
+      "prompt": "Use case: logo-brand. Asset type: one macOS 27 application-icon concept preview for GainMapHDR, a professional native utility that converts photos to HDR HEIC with a gain map. Deliver a single square 1024x1024 image showing ONE centered rounded-square macOS app icon, front-on, occupying 82% of canvas, on a very light neutral gray presentation background. This is a preview of a layered Icon Composer design: an opaque background tile and a simple foreground symbol with restrained translucent glass material, gentle upper-left illumination, clear silhouette, precise geometry, clear at 32px. Elegant professional macOS aesthetic, modest dimensionality, excellent contrast. No text, no letters, no numbers, no captions, no Apple logo, no watermark, no UI screenshot, no surrounding objects, no elaborate illustration, no star sparkles, no excessive bloom, no perspective tilt. Concept A — Light Layers: two slightly offset upright photo plates stacked closely as one compact central symbol. Rear plate is translucent cool cyan gain-map glass, visible only along its top and right edges. Front plate contains an extremely simple abstract dark blue mountain/horizon silhouette with a single warm luminous sun; sweeping tonal transition from deep blue shadow to clear cyan light. Rounded-square background is subtly off-white with a pale icy-blue center. The symbol should read as a photographic image plus a supplemental light layer, not a generic document stack. Keep sun and horizon boldly readable, only 3 large visual shapes. Sophisticated quiet visual identity."
+    },
+    {
+      "name": "B 光谱棱镜",
+      "file": "B-spectral-prism.png",
+      "prompt": "Use case: logo-brand. Asset type: one macOS 27 application-icon concept preview for GainMapHDR, a professional native utility that converts photos to HDR HEIC with a gain map. Deliver a single square 1024x1024 image showing ONE centered rounded-square macOS app icon, front-on, occupying 82% of canvas, on a very light neutral gray presentation background. This is a preview of a layered Icon Composer design: an opaque background tile and a simple foreground symbol with restrained translucent glass material, gentle upper-left illumination, clear silhouette, precise geometry, clear at 32px. Elegant professional macOS aesthetic, modest dimensionality, excellent contrast. No text, no letters, no numbers, no captions, no Apple logo, no watermark, no UI screenshot, no surrounding objects, no elaborate illustration, no star sparkles, no excessive bloom, no perspective tilt. Concept B — Spectral Prism: one sculptural triangular optical prism centered on a deep midnight-indigo rounded-square tile, refracting a single broad white light beam into a short coherent ribbon of cyan, blue, violet and a small amber accent. Optical forms are simple, compact and balanced, seen straight-on with very shallow relief; no black empty areas, no infinite beams extending beyond tile, no science diagram arrows. The prism is luminous translucent glass with crisp clean edges and controlled refraction. The rainbow occupies a restrained small part of the icon, not an all-over rainbow gradient. It should communicate expanded color and light from image conversion, with a memorable strong silhouette.",
+      "refinement": "Preserve artwork; replace ragged transparent exterior with opaque neutral gray preview background and clean margin."
+    },
+    {
+      "name": "C 明暗光环",
+      "file": "C-luminance-ring.png",
+      "prompt": "Use case: logo-brand. Asset type: one macOS 27 application-icon concept preview for GainMapHDR, a professional native utility that converts photos to HDR HEIC with a gain map. Deliver a single square 1024x1024 image showing ONE centered rounded-square macOS app icon, front-on, occupying 82% of canvas, on a very light neutral gray presentation background. This is a preview of a layered Icon Composer design: an opaque background tile and a simple foreground symbol with restrained translucent glass material, gentle upper-left illumination, clear silhouette, precise geometry, clear at 32px. Elegant professional macOS aesthetic, modest dimensionality, excellent contrast. No text, no letters, no numbers, no captions, no Apple logo, no watermark, no UI screenshot, no surrounding objects, no elaborate illustration, no star sparkles, no excessive bloom, no perspective tilt. Concept C — Luminance Ring: one bold circular optical ring centered on a graphite-blue rounded-square tile. Ring formed from two broad interlocking arcs, one translucent pale silver-blue representing shadow detail, one warm pearl-gold representing recovered highlight. A simple bright central disc subtly offset upward like an opening aperture; generous dark negative space separates the ring from the disc. No many-bladed camera shutter, no literal camera, no gear, no glowing magic portal. Graphic and minimal, restrained dimensional glass, subtle smooth transition of luminance, instantly legible at tiny Dock sizes. Refined photographic tool identity.",
+      "refinement": "Preserve colors and layout; simplify arc dimensionality, clean all perimeter artifacts, use opaque neutral preview background."
+    }
+  ],
+  "productionNotes": [
+    "Concept previews simulate material appearance; do not ship these flattened previews as final layered icon assets.",
+    "Prepare unmasked square layers on a 1024 × 1024 canvas; opaque full-bleed background and foreground layers.",
+    "Apply adaptive highlights, refraction, shadows and translucency in Icon Composer; verify default/dark/mono appearances and small Dock sizes on macOS 27."
+  ],
+  "sources": [
+    "https://developer.apple.com/design/human-interface-guidelines/app-icons",
+    "https://developer.apple.com/documentation/xcode/creating-your-app-icon-using-icon-composer"
+  ]
+}

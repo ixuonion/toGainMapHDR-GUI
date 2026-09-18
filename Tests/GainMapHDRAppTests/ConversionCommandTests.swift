@@ -4,7 +4,7 @@ import Testing
 
 @Suite("Conversion command")
 struct ConversionCommandTests {
-    @Test("Builds backend command from README contract")
+    @Test("Builds backend command from upstream source contract")
     func buildsSingleFileCommand() throws {
         let input = ImageInput(url: URL(fileURLWithPath: "/Users/example/In/test.tiff"))
         var settings = ConversionSettings()
@@ -31,8 +31,7 @@ struct ConversionCommandTests {
             "-d", "10",
             "-t", "-HDR",
             "-g",
-            "-H", "2",
-            "-m"
+            "-H"
         ])
     }
 
@@ -60,7 +59,7 @@ struct ConversionCommandTests {
         settings.clampValues()
 
         #expect(settings.quality == 100)
-        #expect(settings.concurrency <= ProcessInfo.processInfo.processorCount)
+        #expect(settings.concurrency == 8)
         #expect(settings.toneMappingRatio == 1)
         #expect(settings.maxHeadroom == 100)
     }

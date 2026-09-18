@@ -77,3 +77,48 @@
 "tone_mapped_sdr" = "Tone Mapped SDR";
 
 "scanning_folder" = "正在扫描文件夹...";
+
+/* Native macOS 27 UI demo */
+"demo_interface" = "界面";
+"demo_enable" = "macOS 27 新界面 Demo";
+"demo_subtitle" = "macOS 27 · 新界面 Demo";
+"demo_import" = "导入";
+"demo_diagnostics" = "命令与日志";
+"demo_inspector" = "转换设置";
+"demo_convert_all" = "全部转换";
+"demo_library" = "源图片";
+"demo_no_inputs" = "尚未添加图片";
+"demo_sidebar_hint" = "导入的图片将在这里显示。";
+"demo_workspace" = "转换工作区";
+"demo_workspace_hint" = "查看源图片，设置输出参数。";
+"demo_welcome" = "从一张图片开始。";
+"demo_welcome_hint" = "导入图片或整个文件夹，开始 HDR 转换。";
+"demo_no_preview" = "无法生成缩略预览";
+"demo_no_preview_hint" = "仍可将源文件提交给转换器处理。";
+"demo_preview_note" = "源图缩略预览 · 非 HDR 输出效果";
+"demo_reveal_source" = "在访达中显示源文件";
+"demo_recipe" = "输出摘要";
+"demo_batch_note" = "设置应用于本批次全部图片。";
+"demo_destination_note" = "整个批次输出到第一张源图片所在的文件夹。";
+"demo_copy" = "复制";
+"demo_motion_preview" = "进度动效预览";
+"demo_motion_note" = "仅供设计预览，不转换文件。开启减少动态效果后使用静态指示；应用不活跃时暂停动效。";
+"demo_motion_running" = "预览运行状态";
+"demo_motion_value" = "预览进度";
+
+// Production backend and lifecycle
+"studio_subtitle" = "原生 HDR 转换";
+"auto_concurrency" = "自动";
+"cancelling" = "正在停止并清理…";
+"batch_progress" = "已处理 %d / %d 张";
+"worker_count" = "工作进程：%d（已限制资源占用）";
+"output_collision" = "批处理中出现同名输出：";
+"output_exists" = "输出已存在，请选择其他目录或命名后缀：";
+"invalid_output" = "后端未生成完整的 HEIC 文件。";
+"error_input" = "输入文件错误";
+"error_backendMissing" = "后端缺失，请重新安装应用";
+"error_permission" = "文件访问权限不足";
+"error_output" = "输出失败";
+"error_unsupported" = "不支持或已损坏的图像";
+"error_process" = "后端进程失败";
+"import_while_converting" = "请等待当前转换完成或取消后再导入图片。";

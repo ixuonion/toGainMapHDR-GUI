@@ -1,0 +1,65 @@
+Building for debugging...
+[Planning 1 / 244]
+[26 / 79] SystemPackage
+[44 / 107]
+[56 / 120] SystemPackage
+[65 / 120]
+[76 / 121] Subprocess
+[96 / 140] Subprocess
+[97 / 140] Subprocess
+[105 / 140] SystemPackage
+[125 / 178] GainMapHDRApp
+[126 / 178] Subprocess
+[138 / 178] GainMapHDRApp
+[146 / 178] GainMapHDR-product
+[154 / 176] GainMapHDR-product
+[154 / 176] GainMapHDRApp
+[154 / 176] GainMapHDR-product
+[155 / 176] GainMapHDR-product
+[158 / 176] GainMapHDRApp
+[158 / 176] GainMapHDR-product
+[165 / 176] GainMapHDRAppTests-product
+[171 / 182] GainMapHDRAppTests-product
+[176 / 182] GainMapHDRAppTests-product
+[178 / 182] GainMapHDRAppTests-product
+Build complete! (3.91秒)
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite "Atomic output publication" started.
+◇ Suite "Backend lifecycle and scheduler" started.
+◇ Suite "File safety" started.
+◇ Test competingPublishersNeverOverwrite() started.
+◇ Test sourceParameterContract() started.
+◇ Test successfulExitWithoutImageIsFailure() started.
+✔ Test sourceParameterContract() passed after 0.001 seconds.
+◇ Test streamsUnicodeAndFinalOutput() started.
+✔ Test competingPublishersNeverOverwrite() passed after 0.012 seconds.
+✔ Suite "Atomic output publication" passed after 0.012 seconds.
+✔ Test streamsUnicodeAndFinalOutput() passed after 0.026 seconds.
+◇ Test logFloodIsBoundedAndDrained() started.
+✔ Test successfulExitWithoutImageIsFailure() passed after 0.129 seconds.
+◇ Test duplicateDestinationsDoNotRace() started.
+✔ Test duplicateDestinationsDoNotRace() passed after 0.149 seconds.
+◇ Test burstOpenEventsAreNotDropped() started.
+✔ Test burstOpenEventsAreNotDropped() passed after 0.003 seconds.
+◇ Test missingInputAndDeniedExecutableAreDistinct() started.
+✔ Test missingInputAndDeniedExecutableAreDistinct() passed after 0.001 seconds.
+✔ Suite "File safety" passed after 0.283 seconds.
+✔ Test logFloodIsBoundedAndDrained() passed after 4.157 seconds.
+◇ Test failuresAreCategorized() started.
+✔ Test failuresAreCategorized() passed after 0.042 seconds.
+◇ Test cancelEscalatesAndReapsBeforeReturning() started.
+✔ Test cancelEscalatesAndReapsBeforeReturning() passed after 1.076 seconds.
+◇ Test cancelledBeforeSpawn() started.
+✔ Test cancelledBeforeSpawn() passed after 0.001 seconds.
+◇ Test repeatedProcessesCloseDescriptors() started.
+✔ Test repeatedProcessesCloseDescriptors() passed after 0.536 seconds.
+◇ Test importDeduplicatesAndSkipsDirectories() started.
+✔ Test importDeduplicatesAndSkipsDirectories() passed after 0.003 seconds.
+◇ Test fiveHundredJobsAndCancellationState() started.
+✔ Test fiveHundredJobsAndCancellationState() passed after 1.463 seconds.
+◇ Test cancelWaitsThenAllowsRestart() started.
+✔ Test cancelWaitsThenAllowsRestart() passed after 1.197 seconds.
+✔ Suite "Backend lifecycle and scheduler" passed after 8.508 seconds.
+✔ Test run with 15 tests in 3 suites passed after 8.508 seconds.

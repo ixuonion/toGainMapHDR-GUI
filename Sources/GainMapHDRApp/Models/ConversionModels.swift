@@ -1,6 +1,6 @@
 import Foundation
 
-struct ImageInput: Identifiable, Hashable {
+struct ImageInput: Identifiable, Hashable, Sendable {
     let id = UUID()
     let url: URL
 
@@ -13,7 +13,7 @@ struct ImageInput: Identifiable, Hashable {
     }
 }
 
-enum OutputFormat: String, CaseIterable, Identifiable {
+enum OutputFormat: String, CaseIterable, Identifiable, Sendable {
     case heic
 
     var id: String { rawValue }
@@ -25,7 +25,7 @@ enum OutputFormat: String, CaseIterable, Identifiable {
     }
 }
 
-enum NamingPolicy: String, CaseIterable, Identifiable {
+enum NamingPolicy: String, CaseIterable, Identifiable, Sendable {
     case appendHDR = "-HDR"
     case appendAdaptiveHDR = "-AdaptiveHDR"
     case appendAppleHDR = "-AppleHDR"
@@ -41,7 +41,7 @@ enum NamingPolicy: String, CaseIterable, Identifiable {
     }
 }
 
-enum ColorSpaceOption: String, CaseIterable, Identifiable {
+enum ColorSpaceOption: String, CaseIterable, Identifiable, Sendable {
     case srgb
     case p3
     case rec2020
@@ -57,7 +57,7 @@ enum ColorSpaceOption: String, CaseIterable, Identifiable {
     }
 }
 
-enum BitDepthOption: Int, CaseIterable, Identifiable {
+enum BitDepthOption: Int, CaseIterable, Identifiable, Sendable {
     case eight = 8
     case ten = 10
 
@@ -68,7 +68,7 @@ enum BitDepthOption: Int, CaseIterable, Identifiable {
     }
 }
 
-enum DestinationChoice: String, CaseIterable, Identifiable {
+enum DestinationChoice: String, CaseIterable, Identifiable, Sendable {
     case sourceFolder
     case pictures
     case custom
@@ -84,31 +84,46 @@ enum DestinationChoice: String, CaseIterable, Identifiable {
     }
 }
 
-struct ConversionSettings: Equatable {
+struct ConversionSettings: Equatable, Sendable {
     var format: OutputFormat = .heic
     var namingPolicy: NamingPolicy = .appendHDR
     var colorSpace: ColorSpaceOption = .rec2020
     var bitDepth: BitDepthOption = .eight
     var quality: Int = 85
-    var concurrency: Int = max(1, min(ProcessInfo.processInfo.processorCount, 4))
+    /// Zero selects the measured, memory-limited Auto policy.
+    var concurrency: Int = 0
     var destinationChoice: DestinationChoice = .sourceFolder
     var customDestination: URL?
-    var backendExecutable: String = BundledBackend.executablePath
+    var backendExecutable: String = "toGainMapHDR"
     var toneMappingRatio: Double = 3.0
     var maxHeadroom: Double = 6.0
     var outputMode: OutputMode = .isoGainMap
     var subsampleGainMap = false
     var monochromeGainMap = false
 
+    var displayMonochrome: Bool {
+        get { outputMode == .isoGainMap && monochromeGainMap }
+        set { monochromeGainMap = newValue }
+    }
+    var qualityValue: Double {
+        get { Double(quality) }
+        set { quality = newValue.isFinite ? Int(min(100, max(1, newValue)).rounded()) : 85 }
+    }
+    var displayBitDepth: BitDepthOption {
+        get { effectiveBitDepth }
+        set { bitDepth = newValue }
+    }
+    var effectiveBitDepth: BitDepthOption { outputMode == .pqHDR ? .ten : bitDepth }
+
     mutating func clampValues() {
         quality = min(100, max(1, quality))
-        concurrency = min(max(ProcessInfo.processInfo.processorCount, 1), max(1, concurrency))
-        toneMappingRatio = min(100, max(1, toneMappingRatio))
-        maxHeadroom = min(100, max(1, maxHeadroom))
+        concurrency = min(8, max(0, concurrency))
+        toneMappingRatio = toneMappingRatio.isFinite ? min(100, max(1, toneMappingRatio)) : 3
+        maxHeadroom = maxHeadroom.isFinite ? min(100, max(1, maxHeadroom)) : 6
     }
 }
 
-enum OutputMode: String, CaseIterable, Identifiable {
+enum OutputMode: String, CaseIterable, Identifiable, Sendable {
     case isoGainMap
     case appleGainMap
     case pqHDR
@@ -138,7 +153,7 @@ enum OutputMode: String, CaseIterable, Identifiable {
     }
 }
 
-struct ConversionCommand: Equatable {
+struct ConversionCommand: Equatable, Sendable {
     var executable: String
     var arguments: [String]
 
@@ -154,7 +169,7 @@ struct ConversionCommand: Equatable {
     }
 }
 
-struct ConversionRequest: Equatable {
+struct ConversionRequest: Equatable, Sendable {
     var inputs: [ImageInput]
     var settings: ConversionSettings
 
@@ -182,11 +197,11 @@ struct ConversionRequest: Equatable {
         var arguments: [String] = [
             input.url.path,
             outputURL.path,
-            "-q", String(format: "%.2f", Double(effectiveSettings.quality) / 100.0),
-            "-r", String(format: "%.1f", effectiveSettings.toneMappingRatio),
-            "-R", String(format: "%.1f", effectiveSettings.maxHeadroom),
+            "-q", String(format: "%.2f", locale: Locale(identifier: "en_US_POSIX"), Double(effectiveSettings.quality) / 100.0),
+            "-r", String(format: "%.1f", locale: Locale(identifier: "en_US_POSIX"), effectiveSettings.toneMappingRatio),
+            "-R", String(format: "%.1f", locale: Locale(identifier: "en_US_POSIX"), effectiveSettings.maxHeadroom),
             "-c", effectiveSettings.colorSpace.rawValue,
-            "-d", String(effectiveSettings.bitDepth.rawValue),
+            "-d", String(effectiveSettings.effectiveBitDepth.rawValue),
             "-t", effectiveSettings.namingPolicy.rawValue
         ]
 
@@ -195,14 +210,18 @@ struct ConversionRequest: Equatable {
         }
 
         if effectiveSettings.subsampleGainMap {
-            arguments.append(contentsOf: ["-H", "2"])
+            arguments.append("-H")
         }
 
-        if effectiveSettings.monochromeGainMap {
+        if effectiveSettings.monochromeGainMap && effectiveSettings.outputMode == .isoGainMap {
             arguments.append("-m")
         }
 
         return ConversionCommand(executable: effectiveSettings.backendExecutable, arguments: arguments)
+    }
+
+    func outputFile(for input: ImageInput) -> URL? {
+        outputURL?.appendingPathComponent(input.url.deletingPathExtension().lastPathComponent + settings.namingPolicy.rawValue + ".heic")
     }
 
     func representativeCommand() -> ConversionCommand? {

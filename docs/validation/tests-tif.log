@@ -1,0 +1,92 @@
+Building for debugging...
+[2 / 7] GainMapHDRAppTests-product
+[4 / 9] GainMapHDRAppTests-product
+[7 / 13] GainMapHDRAppTests-product
+[9 / 13] GainMapHDRAppTests-product
+Build complete! (1.14秒)
+Test Suite 'All tests' started at 2026-09-17 20:26:50.356.
+Test Suite 'All tests' passed at 2026-09-17 20:26:50.357.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+➜ Suite "Real application load" skipped.
+➜ Suite "Batch benchmark" skipped.
+◇ Suite "Backend lifecycle and scheduler" started.
+◇ Suite "Reference CLI integration" started.
+◇ Suite "Atomic output publication" started.
+◇ Suite "Conversion command" started.
+◇ Test outputMatchesReferenceAcrossModes() started.
+◇ Test sourceParameterContract() started.
+➜ Test storeAndThumbnailsStayResponsive() skipped.
+◇ Suite "File safety" started.
+◇ Test "Settings clamp user-entered numeric fields" started.
+◇ Test competingPublishersNeverOverwrite() started.
+➜ Test compareFrozenRunnerAndScheduler() skipped.
+◇ Test successfulExitWithoutImageIsFailure() started.
+◇ Test "Builds backend command from upstream source contract" started.
+◇ Test "Representative command uses first input only" started.
+✔ Test "Settings clamp user-entered numeric fields" passed after 0.001 seconds.
+✔ Test "Representative command uses first input only" passed after 0.001 seconds.
+✔ Test "Builds backend command from upstream source contract" passed after 0.001 seconds.
+✔ Suite "Conversion command" passed after 0.001 seconds.
+✔ Test sourceParameterContract() passed after 0.001 seconds.
+◇ Test streamsUnicodeAndFinalOutput() started.
+REFERENCE_DIRECTORY /var/folders/5b/4_vy6xnj5nj_5kt_gbhtz_140000gn/T/GainMapTests-1E42BF81-06D3-4094-93D0-96C76ECA63D8
+✔ Test competingPublishersNeverOverwrite() passed after 0.005 seconds.
+✔ Suite "Atomic output publication" passed after 0.006 seconds.
+✔ Test successfulExitWithoutImageIsFailure() passed after 0.008 seconds.
+◇ Test duplicateDestinationsDoNotRace() started.
+✔ Test streamsUnicodeAndFinalOutput() passed after 0.017 seconds.
+◇ Test logFloodIsBoundedAndDrained() started.
+✔ Test duplicateDestinationsDoNotRace() passed after 0.080 seconds.
+◇ Test burstOpenEventsAreNotDropped() started.
+✔ Test burstOpenEventsAreNotDropped() passed after 0.001 seconds.
+◇ Test missingInputAndDeniedExecutableAreDistinct() started.
+✔ Test missingInputAndDeniedExecutableAreDistinct() passed after 0.001 seconds.
+✔ Suite "File safety" passed after 0.090 seconds.
+✔ Test logFloodIsBoundedAndDrained() passed after 0.604 seconds.
+◇ Test failuresAreCategorized() started.
+✔ Test failuresAreCategorized() passed after 0.021 seconds.
+◇ Test cancelEscalatesAndReapsBeforeReturning() started.
+✔ Test cancelEscalatesAndReapsBeforeReturning() passed after 1.043 seconds.
+◇ Test cancelledBeforeSpawn() started.
+✔ Test cancelledBeforeSpawn() passed after 0.001 seconds.
+◇ Test repeatedProcessesCloseDescriptors() started.
+✔ Test repeatedProcessesCloseDescriptors() passed after 0.111 seconds.
+◇ Test importDeduplicatesAndSkipsDirectories() started.
+✔ Test importDeduplicatesAndSkipsDirectories() passed after 0.003 seconds.
+◇ Test fiveHundredJobsAndCancellationState() started.
+✔ Test fiveHundredJobsAndCancellationState() passed after 1.333 seconds.
+◇ Test cancelWaitsThenAllowsRestart() started.
+ENCODED_IDENTICAL true
+✔ Test cancelWaitsThenAllowsRestart() passed after 1.183 seconds.
+✔ Suite "Backend lifecycle and scheduler" passed after 4.319 seconds.
+REFERENCE_PROOF variant=0 matchedAttempt=0 sha256=SHA256 digest: de9788baa4ec957cc96cd52925ace77e2f9ad038b43d432df8a85310a056d151
+REFERENCE variant=0 mode=isoGainMap pixels-and-metadata-match
+ENCODED_IDENTICAL true
+REFERENCE_PROOF variant=1 matchedAttempt=0 sha256=SHA256 digest: 2c1866c7d3b0a221c56581e447414ec1a0c1d9921a12388b6bfa1ba2ba2e0a5c
+REFERENCE variant=1 mode=appleGainMap pixels-and-metadata-match
+ENCODED_IDENTICAL true
+REFERENCE_PROOF variant=2 matchedAttempt=0 sha256=SHA256 digest: b7e72f2c9d371634a5cbaa407103a1d22a975658865d58e73e9011705987c40b
+REFERENCE variant=2 mode=pqHDR pixels-and-metadata-match
+ENCODED_IDENTICAL true
+REFERENCE_PROOF variant=3 matchedAttempt=0 sha256=SHA256 digest: 0647b10ee387619973151ba8237559c69a9510495c5693830c21a2abf0ec3c78
+REFERENCE variant=3 mode=hlgHDR pixels-and-metadata-match
+ENCODED_IDENTICAL true
+REFERENCE_PROOF variant=4 matchedAttempt=0 sha256=SHA256 digest: dc956a919366da631167a42511628efb9cd954fdb6b225c1343f20913419a737
+REFERENCE variant=4 mode=sdr pixels-and-metadata-match
+ENCODED_IDENTICAL true
+REFERENCE_PROOF variant=5 matchedAttempt=0 sha256=SHA256 digest: fcdbfa1f8834099a46f9e8fada11bfee4db09b3425986df435738bc95d47a62e
+REFERENCE variant=5 mode=isoGainMap pixels-and-metadata-match
+ENCODED_IDENTICAL true
+REFERENCE_PROOF variant=6 matchedAttempt=0 sha256=SHA256 digest: 1513a42d2769ca68c157b529260b6bdab6df1911b178fe5631ffa17d0acc23d0
+REFERENCE variant=6 mode=isoGainMap pixels-and-metadata-match
+ENCODED_IDENTICAL true
+REFERENCE_PROOF variant=7 matchedAttempt=0 sha256=SHA256 digest: 22ceacaf743eca557125a1fb638190de4ffcde06d31126f715f6a0a53f1665a9
+REFERENCE variant=7 mode=isoGainMap pixels-and-metadata-match
+✔ Test outputMatchesReferenceAcrossModes() passed after 29.229 seconds.
+◇ Test realBatchAndCancelLeaveNoPartialOutput() started.
+✔ Test realBatchAndCancelLeaveNoPartialOutput() passed after 17.463 seconds.
+✔ Suite "Reference CLI integration" passed after 46.693 seconds.
+✔ Test run with 22 tests in 7 suites passed after 46.693 seconds.

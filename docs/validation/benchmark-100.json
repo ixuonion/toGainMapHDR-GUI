@@ -1,0 +1,74 @@
+[
+  {
+    "effectiveWorkers" : 1,
+    "images" : 100,
+    "imagesPerSecond" : 2.4042488992887403,
+    "repeat" : 0,
+    "seconds" : 41.593031416000002,
+    "variant" : "legacy",
+    "workers" : 1
+  },
+  {
+    "effectiveWorkers" : 1,
+    "images" : 100,
+    "imagesPerSecond" : 2.3613614371512539,
+    "repeat" : 0,
+    "seconds" : 42.348451375000003,
+    "variant" : "scheduler",
+    "workers" : 1
+  },
+  {
+    "effectiveWorkers" : 2,
+    "images" : 100,
+    "imagesPerSecond" : 4.4640167108451401,
+    "repeat" : 0,
+    "seconds" : 22.401349833000001,
+    "variant" : "legacy",
+    "workers" : 2
+  },
+  {
+    "effectiveWorkers" : 2,
+    "images" : 100,
+    "imagesPerSecond" : 4.4470054748974377,
+    "repeat" : 0,
+    "seconds" : 22.487042250000002,
+    "variant" : "scheduler",
+    "workers" : 2
+  },
+  {
+    "effectiveWorkers" : 4,
+    "images" : 100,
+    "imagesPerSecond" : 8.0455025464769836,
+    "repeat" : 0,
+    "seconds" : 12.429304374999999,
+    "variant" : "legacy",
+    "workers" : 4
+  },
+  {
+    "effectiveWorkers" : 4,
+    "images" : 100,
+    "imagesPerSecond" : 5.6624751451662814,
+    "repeat" : 0,
+    "seconds" : 17.660121666999999,
+    "variant" : "scheduler",
+    "workers" : 4
+  },
+  {
+    "effectiveWorkers" : 8,
+    "images" : 100,
+    "imagesPerSecond" : 7.5834185755776886,
+    "repeat" : 0,
+    "seconds" : 13.186664959,
+    "variant" : "legacy",
+    "workers" : 8
+  },
+  {
+    "effectiveWorkers" : 7,
+    "images" : 100,
+    "imagesPerSecond" : 9.9760085304856929,
+    "repeat" : 0,
+    "seconds" : 10.024049166999999,
+    "variant" : "scheduler",
+    "workers" : 8
+  }
+]

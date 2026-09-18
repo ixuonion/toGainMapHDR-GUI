@@ -1,60 +1,41 @@
 import AppKit
 import UniformTypeIdentifiers
 
+@MainActor
 enum FilePanelService {
-    @MainActor
-    static func pickImages() -> [URL] {
+    static func pickImages() async -> [URL] {
         let panel = NSOpenPanel()
         panel.title = L10n.text("add_hdr_images")
         panel.prompt = L10n.text("add_images")
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = false
         panel.canChooseFiles = true
-        panel.allowedContentTypes = supportedImageTypes
-        return panel.runModal() == .OK ? panel.urls : []
+        panel.allowedContentTypes = FileAccessService.supportedExtensions.sorted().compactMap { UTType(filenameExtension: $0) }
+        return await present(panel) == .OK ? panel.urls : []
     }
 
-    @MainActor
-    static func pickFolder(title: String = L10n.text("choose_folder"), prompt: String = L10n.text("choose")) -> URL? {
+    static func pickFolder(title: String = L10n.text("choose_folder"), prompt: String = L10n.text("choose")) async -> URL? {
         let panel = NSOpenPanel()
         panel.title = title
         panel.prompt = prompt
-        panel.allowsMultipleSelection = false
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
-        return panel.runModal() == .OK ? panel.url : nil
+        return await present(panel) == .OK ? panel.url : nil
     }
 
-    static func imageFiles(in folder: URL) -> [URL] {
-        guard let enumerator = FileManager.default.enumerator(
-            at: folder,
-            includingPropertiesForKeys: [.isRegularFileKey],
-            options: [.skipsHiddenFiles, .skipsPackageDescendants]
-        ) else {
-            return []
+    private static func present(_ panel: NSOpenPanel) async -> NSApplication.ModalResponse {
+        guard !Task.isCancelled else { return .cancel }
+        return await withTaskCancellationHandler {
+            await withCheckedContinuation { continuation in
+                if let window = NSApp.keyWindow {
+                    panel.beginSheetModal(for: window) { continuation.resume(returning: $0) }
+                } else {
+                    panel.begin { continuation.resume(returning: $0) }
+                }
+            }
+        } onCancel: {
+            // AppKit's sheet API is callback based; cancellation crosses to its main actor once.
+            Task { @MainActor in panel.cancel(nil) }
         }
-
-        return enumerator.compactMap { item -> URL? in
-            guard let url = item as? URL else { return nil }
-            guard supportedExtensions.contains(url.pathExtension.lowercased()) else { return nil }
-            return url
-        }
-        .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
     }
-
-    private static let supportedImageTypes: [UTType] = [
-        .png,
-        .tiff,
-        .heic,
-        .heif,
-        .jpeg,
-        UTType(filenameExtension: "avif"),
-        UTType(filenameExtension: "jxl"),
-        UTType(filenameExtension: "exr"),
-        UTType(filenameExtension: "hdr")
-    ].compactMap { $0 }
-
-    private static let supportedExtensions = Set([
-        "png", "tif", "tiff", "heic", "heif", "jpg", "jpeg", "avif", "jxl", "exr", "hdr"
-    ])
 }

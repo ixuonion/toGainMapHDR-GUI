@@ -4,7 +4,11 @@ set -euo pipefail
 MODE="${1:-run}"
 APP_NAME="GainMapHDR"
 BUNDLE_ID="dev.codex.GainMapHDR"
-MIN_SYSTEM_VERSION="26.0"
+MIN_SYSTEM_VERSION="27.0"
+BUILD_CONFIGURATION="${GAINMAP_BUILD_CONFIGURATION:-release}"
+if [[ "$MODE" == "debug" || "$MODE" == "--debug" ]]; then
+  BUILD_CONFIGURATION="${GAINMAP_BUILD_CONFIGURATION:-debug}"
+fi
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
@@ -19,10 +23,14 @@ BACKEND_SOURCE="$ROOT_DIR/Sources/GainMapHDRApp/Resources/backend"
 export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
 export CLANG_MODULE_CACHE_PATH="$ROOT_DIR/.build/module-cache"
 
-pkill -x "$APP_NAME" >/dev/null 2>&1 || true
+# Do not kill an app that may own running conversions.
+if pgrep -x "$APP_NAME" >/dev/null; then
+  echo "Quit $APP_NAME normally before replacing its bundle (conversion cleanup must finish)." >&2
+  exit 1
+fi
 
-swift build --scratch-path "$ROOT_DIR/.build"
-BUILD_BINARY="$(swift build --scratch-path "$ROOT_DIR/.build" --show-bin-path)/$APP_NAME"
+swift build -c "$BUILD_CONFIGURATION" --scratch-path "$ROOT_DIR/.build"
+BUILD_BINARY="$(swift build -c "$BUILD_CONFIGURATION" --scratch-path "$ROOT_DIR/.build" --show-bin-path)/$APP_NAME"
 
 rm -rf "$APP_BUNDLE"
 mkdir -p "$APP_MACOS"
@@ -32,6 +40,9 @@ chmod +x "$APP_BINARY"
 find "$(dirname "$BUILD_BINARY")" -maxdepth 1 -name "${APP_NAME}_*.bundle" -exec cp -R {} "$APP_RESOURCES/" \;
 cp -R "$BACKEND_SOURCE" "$APP_RESOURCES/backend"
 chmod +x "$APP_RESOURCES/backend/toGainMapHDR"
+mkdir -p "$APP_RESOURCES/licenses"
+cp "$ROOT_DIR/.build/checkouts/swift-subprocess/LICENSE" "$APP_RESOURCES/licenses/swift-subprocess.txt"
+cp "$ROOT_DIR/.build/checkouts/swift-system/LICENSE.txt" "$APP_RESOURCES/licenses/swift-system.txt"
 
 cat >"$INFO_PLIST" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -48,6 +59,21 @@ cat >"$INFO_PLIST" <<PLIST
   <string>APPL</string>
   <key>LSMinimumSystemVersion</key>
   <string>$MIN_SYSTEM_VERSION</string>
+  <key>CFBundleShortVersionString</key>
+  <string>2.0.0</string>
+  <key>CFBundleVersion</key>
+  <string>2</string>
+  <key>CFBundleDevelopmentRegion</key>
+  <string>en</string>
+  <key>CFBundleLocalizations</key>
+  <array><string>en</string><string>zh-Hans</string></array>
+  <key>CFBundleDocumentTypes</key>
+  <array><dict>
+    <key>CFBundleTypeName</key><string>Images</string>
+    <key>CFBundleTypeRole</key><string>Viewer</string>
+    <key>LSHandlerRank</key><string>Alternate</string>
+    <key>LSItemContentTypes</key><array><string>public.image</string></array>
+  </dict></array>
   <key>NSPrincipalClass</key>
   <string>NSApplication</string>
 </dict>

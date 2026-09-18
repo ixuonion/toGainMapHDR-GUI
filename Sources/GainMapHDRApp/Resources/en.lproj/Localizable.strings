@@ -77,3 +77,48 @@
 "tone_mapped_sdr" = "Tone Mapped SDR";
 
 "scanning_folder" = "Scanning folder...";
+
+/* Native macOS 27 UI demo */
+"demo_interface" = "Interface";
+"demo_enable" = "macOS 27 UI Demo";
+"demo_subtitle" = "macOS 27 · UI Demo";
+"demo_import" = "Import";
+"demo_diagnostics" = "Command & Log";
+"demo_inspector" = "Conversion Settings";
+"demo_convert_all" = "Convert All";
+"demo_library" = "Source Images";
+"demo_no_inputs" = "No images yet";
+"demo_sidebar_hint" = "Imported images appear here.";
+"demo_workspace" = "Conversion Workspace";
+"demo_workspace_hint" = "Review your source. Configure your output.";
+"demo_welcome" = "Bring your images to HDR.";
+"demo_welcome_hint" = "Import images or a folder to begin your conversion.";
+"demo_no_preview" = "Preview unavailable";
+"demo_no_preview_hint" = "The source can still be submitted to the converter.";
+"demo_preview_note" = "Source thumbnail · Not an HDR output preview";
+"demo_reveal_source" = "Show source in Finder";
+"demo_recipe" = "Output Summary";
+"demo_batch_note" = "Settings apply to all images in this batch.";
+"demo_destination_note" = "Uses the first source image’s folder for the entire batch.";
+"demo_copy" = "Copy";
+"demo_motion_preview" = "Progress Animation Preview";
+"demo_motion_note" = "Design preview only. No files are converted. Reduce Motion uses a static indicator; animation pauses when the app is inactive.";
+"demo_motion_running" = "Preview running state";
+"demo_motion_value" = "Preview progress";
+
+// Production backend and lifecycle
+"studio_subtitle" = "Native HDR conversion";
+"auto_concurrency" = "Auto";
+"cancelling" = "Stopping and cleaning up…";
+"batch_progress" = "%d of %d processed";
+"worker_count" = "Workers: %d (resource limited)";
+"output_collision" = "Duplicate output name in this batch:";
+"output_exists" = "Output already exists; choose another destination or naming suffix:";
+"invalid_output" = "The backend did not produce a complete HEIC file.";
+"error_input" = "Input file error";
+"error_backendMissing" = "Backend is missing; reinstall the application";
+"error_permission" = "File access denied";
+"error_output" = "Output failed";
+"error_unsupported" = "Unsupported or damaged image";
+"error_process" = "Backend process failed";
+"import_while_converting" = "Wait for conversion to finish or cancel it before importing more images.";
