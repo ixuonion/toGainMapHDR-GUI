@@ -68,3 +68,5 @@ GAINMAP_BENCHMARK_REPORT=/tmp/gainmap-benchmark.json \
 - 打包 CLI SHA-256: `c75c563d11a2568847e10fa7d62da534891818546a00700f90641c61dc5737b8`
 
 上游许可证位于 `Sources/GainMapHDRApp/Resources/backend/LICENSE-toGainMapHDR`，随应用一同分发。
+
+应用图标使用 `Sources/GainMapHDRApp/Resources/AppIcon.icns`，构建时复制到应用包并由 `CFBundleIconFile` 引用。

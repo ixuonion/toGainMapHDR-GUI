@@ -19,6 +19,8 @@ APP_RESOURCES="$APP_CONTENTS/Resources"
 APP_BINARY="$APP_MACOS/$APP_NAME"
 INFO_PLIST="$APP_CONTENTS/Info.plist"
 BACKEND_SOURCE="$ROOT_DIR/Sources/GainMapHDRApp/Resources/backend"
+APP_ICON_SOURCE="$ROOT_DIR/Sources/GainMapHDRApp/Resources/AppIcon.icns"
+RESOURCE_BUNDLE_NAME="${APP_NAME}_GainMapHDRApp.bundle"
 
 export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
 export CLANG_MODULE_CACHE_PATH="$ROOT_DIR/.build/module-cache"
@@ -40,9 +42,15 @@ chmod +x "$APP_BINARY"
 find "$(dirname "$BUILD_BINARY")" -maxdepth 1 -name "${APP_NAME}_*.bundle" -exec cp -R {} "$APP_RESOURCES/" \;
 cp -R "$BACKEND_SOURCE" "$APP_RESOURCES/backend"
 chmod +x "$APP_RESOURCES/backend/toGainMapHDR"
+cp "$APP_ICON_SOURCE" "$APP_RESOURCES/AppIcon.icns"
 mkdir -p "$APP_RESOURCES/licenses"
 cp "$ROOT_DIR/.build/checkouts/swift-subprocess/LICENSE" "$APP_RESOURCES/licenses/swift-subprocess.txt"
 cp "$ROOT_DIR/.build/checkouts/swift-system/LICENSE.txt" "$APP_RESOURCES/licenses/swift-system.txt"
+
+if [[ ! -d "$APP_RESOURCES/$RESOURCE_BUNDLE_NAME" ]]; then
+  echo "missing SwiftPM resource bundle: $RESOURCE_BUNDLE_NAME" >&2
+  exit 1
+fi
 
 cat >"$INFO_PLIST" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -55,6 +63,10 @@ cat >"$INFO_PLIST" <<PLIST
   <string>$BUNDLE_ID</string>
   <key>CFBundleName</key>
   <string>$APP_NAME</string>
+  <key>CFBundleIconFile</key>
+  <string>AppIcon</string>
+  <key>CFBundleIconName</key>
+  <string>AppIcon</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>LSMinimumSystemVersion</key>
@@ -62,7 +74,7 @@ cat >"$INFO_PLIST" <<PLIST
   <key>CFBundleShortVersionString</key>
   <string>2.0.0</string>
   <key>CFBundleVersion</key>
-  <string>2</string>
+  <string>200</string>
   <key>CFBundleDevelopmentRegion</key>
   <string>en</string>
   <key>CFBundleLocalizations</key>
@@ -76,6 +88,8 @@ cat >"$INFO_PLIST" <<PLIST
   </dict></array>
   <key>NSPrincipalClass</key>
   <string>NSApplication</string>
+  <key>NSHighResolutionCapable</key>
+  <true/>
 </dict>
 </plist>
 PLIST

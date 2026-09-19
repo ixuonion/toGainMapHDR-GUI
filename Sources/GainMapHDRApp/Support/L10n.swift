@@ -2,8 +2,21 @@ import Foundation
 import SwiftUI
 
 enum L10n {
+    private static let resourceBundle: Bundle = {
+        let bundleName = "GainMapHDR_GainMapHDRApp"
+
+        if let resourceURL = Bundle.main.resourceURL?
+            .appendingPathComponent(bundleName)
+            .appendingPathExtension("bundle"),
+           let bundle = Bundle(url: resourceURL) {
+            return bundle
+        }
+
+        return .module
+    }()
+
     static func text(_ key: String) -> String {
-        NSLocalizedString(key, bundle: .module, comment: "")
+        NSLocalizedString(key, bundle: resourceBundle, comment: "")
     }
 }
 

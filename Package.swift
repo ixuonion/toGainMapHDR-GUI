@@ -18,7 +18,7 @@ let package = Package(
         .executableTarget(
             name: "GainMapHDRApp",
             dependencies: [.product(name: "Subprocess", package: "swift-subprocess")],
-            exclude: ["Resources/backend"],
+            exclude: ["Resources/backend", "Resources/AppIcon.icns"],
             resources: [
                 .process("Resources/en.lproj"),
                 .process("Resources/zh-Hans.lproj")
