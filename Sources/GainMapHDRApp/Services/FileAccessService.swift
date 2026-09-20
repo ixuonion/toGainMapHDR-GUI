@@ -54,21 +54,23 @@ actor FileAccessService {
         scopes.removeAll()
     }
 
-    func validate(input: URL, destination: URL) throws -> Int {
-        let scopes = [input, destination.deletingLastPathComponent()].filter { $0.startAccessingSecurityScopedResource() }
+    func validate(input: URL, destination: URL?) throws -> Int {
+        let scopes = [input, destination?.deletingLastPathComponent()].compactMap { $0 }.filter { $0.startAccessingSecurityScopedResource() }
         defer { scopes.forEach { $0.stopAccessingSecurityScopedResource() } }
         let fm = FileManager.default
         guard fm.fileExists(atPath: input.path) else { throw ConversionFailure(kind: .input, detail: input.path) }
         guard fm.isReadableFile(atPath: input.path) else { throw ConversionFailure(kind: .permission, detail: input.path) }
-        guard !fm.fileExists(atPath: destination.path) else {
-            throw ConversionFailure(kind: .output, detail: L10n.text("output_exists") + " " + destination.lastPathComponent)
+        if let destination {
+            guard !fm.fileExists(atPath: destination.path) else {
+                throw ConversionFailure(kind: .output, detail: L10n.text("output_exists") + " " + destination.lastPathComponent)
+            }
+            var isDirectory: ObjCBool = false
+            let parent = destination.deletingLastPathComponent()
+            guard fm.fileExists(atPath: parent.path, isDirectory: &isDirectory), isDirectory.boolValue else {
+                throw ConversionFailure(kind: .output, detail: parent.path)
+            }
+            guard fm.isWritableFile(atPath: parent.path) else { throw ConversionFailure(kind: .permission, detail: parent.path) }
         }
-        var isDirectory: ObjCBool = false
-        let parent = destination.deletingLastPathComponent()
-        guard fm.fileExists(atPath: parent.path, isDirectory: &isDirectory), isDirectory.boolValue else {
-            throw ConversionFailure(kind: .output, detail: parent.path)
-        }
-        guard fm.isWritableFile(atPath: parent.path) else { throw ConversionFailure(kind: .permission, detail: parent.path) }
         guard let source = CGImageSourceCreateWithURL(input as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary),
               let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
               let width = properties[kCGImagePropertyPixelWidth] as? Int,

@@ -43,6 +43,11 @@ find "$(dirname "$BUILD_BINARY")" -maxdepth 1 -name "${APP_NAME}_*.bundle" -exec
 cp -R "$BACKEND_SOURCE" "$APP_RESOURCES/backend"
 chmod +x "$APP_RESOURCES/backend/toGainMapHDR"
 cp "$APP_ICON_SOURCE" "$APP_RESOURCES/AppIcon.icns"
+# Privacy prompts resolve localized purpose strings from the main app, not the SwiftPM resource bundle.
+for language in en zh-Hans; do
+  mkdir -p "$APP_RESOURCES/$language.lproj"
+  cp "$ROOT_DIR/Sources/GainMapHDRApp/Resources/$language.lproj/InfoPlist.strings" "$APP_RESOURCES/$language.lproj/InfoPlist.strings"
+done
 mkdir -p "$APP_RESOURCES/licenses"
 cp "$ROOT_DIR/.build/checkouts/swift-subprocess/LICENSE" "$APP_RESOURCES/licenses/swift-subprocess.txt"
 cp "$ROOT_DIR/.build/checkouts/swift-system/LICENSE.txt" "$APP_RESOURCES/licenses/swift-system.txt"
@@ -72,9 +77,9 @@ cat >"$INFO_PLIST" <<PLIST
   <key>LSMinimumSystemVersion</key>
   <string>$MIN_SYSTEM_VERSION</string>
   <key>CFBundleShortVersionString</key>
-  <string>2.0.0</string>
+  <string>2.1.0</string>
   <key>CFBundleVersion</key>
-  <string>200</string>
+  <string>210</string>
   <key>CFBundleDevelopmentRegion</key>
   <string>en</string>
   <key>CFBundleLocalizations</key>
@@ -86,6 +91,8 @@ cat >"$INFO_PLIST" <<PLIST
     <key>LSHandlerRank</key><string>Alternate</string>
     <key>LSItemContentTypes</key><array><string>public.image</string></array>
   </dict></array>
+  <key>NSPhotoLibraryAddUsageDescription</key>
+  <string>GainMapHDR adds your converted HEIC photos to Photos Library, preserving HDR, Gain Map, color, and metadata.</string>
   <key>NSPrincipalClass</key>
   <string>NSApplication</string>
   <key>NSHighResolutionCapable</key>

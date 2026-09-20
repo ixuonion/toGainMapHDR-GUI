@@ -122,3 +122,18 @@
 "error_unsupported" = "不支持或已损坏的图像";
 "error_process" = "后端进程失败";
 "import_while_converting" = "请等待当前转换完成或取消后再导入图片。";
+
+/* Photos Library output */
+"photos_library" = "照片图库";
+"photos_destination_note" = "将转换后的 HEIC 原文件保存到照片图库。首次保存需允许添加照片。若已开启 iCloud 照片，同步由系统自动处理。";
+"photos_authorizing" = "正在等待添加照片权限…";
+"photos_saving" = "正在保存到照片图库…";
+"photos_saved" = "已保存到照片图库";
+"photos_denied" = "未获准添加照片。请在“系统设置 → 隐私与安全性 → 照片”中允许 GainMapHDR 添加照片后重新转换，也可以改为保存到文件夹。";
+"photos_restricted" = "系统限制不允许添加照片。请检查设备限制，或改为保存到文件夹。";
+"photos_save_failed" = "无法保存到照片图库。已保存的照片会保留；重新转换前请仅选择失败的图片，以免重复添加。";
+"photos_missing_usage" = "请启动打包后的 GainMapHDR.app 以保存到照片图库；当前可执行文件缺少照片权限说明。";
+"photos_cancelling" = "正在取消… 等待已提交的保存完成，已保存的照片会保留。";
+"photos_summary" = "照片图库：已保存 %d 张 · 失败 %d 张 · 已取消 %d 张";
+"photos_convert_save" = "转换并保存";
+"photos_command_note" = "每张图片先转换到独立临时目录，再由 PhotoKit 保存 HEIC 原文件。保存到照片图库没有可独立执行的命令行命令。";

@@ -71,6 +71,7 @@ enum BitDepthOption: Int, CaseIterable, Identifiable, Sendable {
 enum DestinationChoice: String, CaseIterable, Identifiable, Sendable {
     case sourceFolder
     case pictures
+    case photosLibrary
     case custom
 
     var id: String { rawValue }
@@ -78,6 +79,7 @@ enum DestinationChoice: String, CaseIterable, Identifiable, Sendable {
     var title: String {
         switch self {
         case .sourceFolder: L10n.text("source_folder")
+        case .photosLibrary: L10n.text("photos_library")
         case .pictures: L10n.text("pictures")
         case .custom: L10n.text("choose_folder_ellipsis")
         }
@@ -177,6 +179,8 @@ struct ConversionRequest: Equatable, Sendable {
 
     var outputURL: URL? {
         switch settings.destinationChoice {
+        case .photosLibrary:
+            return nil
         case .sourceFolder:
             return inputs.first?.url.deletingLastPathComponent()
         case .pictures:
@@ -186,8 +190,8 @@ struct ConversionRequest: Equatable, Sendable {
         }
     }
 
-    func command(for input: ImageInput) -> ConversionCommand? {
-        guard let outputURL else {
+    func command(for input: ImageInput, outputDirectory: URL? = nil) -> ConversionCommand? {
+        guard let outputURL = outputDirectory ?? outputURL else {
             return nil
         }
 
@@ -220,8 +224,12 @@ struct ConversionRequest: Equatable, Sendable {
         return ConversionCommand(executable: effectiveSettings.backendExecutable, arguments: arguments)
     }
 
+    func outputFilename(for input: ImageInput) -> String {
+        input.url.deletingPathExtension().lastPathComponent + settings.namingPolicy.rawValue + ".heic"
+    }
+
     func outputFile(for input: ImageInput) -> URL? {
-        outputURL?.appendingPathComponent(input.url.deletingPathExtension().lastPathComponent + settings.namingPolicy.rawValue + ".heic")
+        outputURL?.appendingPathComponent(outputFilename(for: input))
     }
 
     func representativeCommand() -> ConversionCommand? {

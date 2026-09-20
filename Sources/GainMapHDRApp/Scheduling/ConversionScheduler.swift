@@ -15,9 +15,29 @@ struct WorkerPolicy: Sendable {
 
 actor ConversionScheduler {
     private let backend: any BackendConverting
-    init(backend: any BackendConverting = BackendProcessService()) { self.backend = backend }
+    private let photos: any PhotoLibrarySaving
+    init(backend: any BackendConverting = BackendProcessService(), photos: any PhotoLibrarySaving = PhotoLibraryService()) {
+        self.backend = backend
+        self.photos = photos
+    }
 
     func run(_ request: ConversionRequest, events: ConversionEventBuffer) async {
+        let savesToPhotos = request.settings.destinationChoice == .photosLibrary
+        if savesToPhotos {
+            for input in request.inputs { await events.set(.authorizingPhotos, for: input.id) }
+            do {
+                try Task.checkCancellation()
+                try await photos.authorize()
+                try Task.checkCancellation()
+                for input in request.inputs { await events.set(.queued, for: input.id) }
+            } catch {
+                let status: JobStatus = error is CancellationError ? .cancelled : .failed(error.localizedDescription)
+                for input in request.inputs { await events.set(status, for: input.id) }
+                await events.append(error.localizedDescription)
+                await events.finish()
+                return
+            }
+        }
         let fileAccess = FileAccessService()
         var largestPixels = 0
         var reserved = Set<String>()
@@ -27,13 +47,16 @@ actor ConversionScheduler {
             if Task.isCancelled { break }
             examined.insert(input.id)
             do {
-                guard let destination = request.outputFile(for: input) else {
-                    throw ConversionFailure(kind: .output, detail: L10n.text("choose_output_destination"))
-                }
-                // Resolve aliases and case differences conservatively before parallel writes.
-                let key = destination.resolvingSymlinksInPath().path.precomposedStringWithCanonicalMapping.lowercased()
-                guard reserved.insert(key).inserted else {
-                    throw ConversionFailure(kind: .output, detail: L10n.text("output_collision") + " " + destination.lastPathComponent)
+                let destination = request.outputFile(for: input)
+                if !savesToPhotos {
+                    guard let destination else {
+                        throw ConversionFailure(kind: .output, detail: L10n.text("choose_output_destination"))
+                    }
+                    // Resolve aliases and case differences conservatively before parallel writes.
+                    let key = destination.resolvingSymlinksInPath().path.precomposedStringWithCanonicalMapping.lowercased()
+                    guard reserved.insert(key).inserted else {
+                        throw ConversionFailure(kind: .output, detail: L10n.text("output_collision") + " " + destination.lastPathComponent)
+                    }
                 }
                 largestPixels = max(largestPixels, try await fileAccess.validate(input: input.url, destination: destination))
                 pending.append(input)
@@ -48,6 +71,7 @@ actor ConversionScheduler {
         let count = WorkerPolicy.count(requested: request.settings.concurrency, inputCount: pending.count, largestPixelCount: largestPixels)
         await events.append(String(format: L10n.text("worker_count"), count))
         let backend = self.backend
+        let photos = self.photos
         await withTaskGroup(of: Void.self) { group in
             var next = 0
             func submit(_ input: ImageInput) {
@@ -55,11 +79,12 @@ actor ConversionScheduler {
                     guard !Task.isCancelled else { await events.set(.cancelled, for: input.id); return }
                     await events.set(.running, for: input.id)
                     do {
-                        try await Self.convert(input, request: request, backend: backend, events: events)
-                        await events.set(.finished, for: input.id)
-                        await events.append(L10n.text("finished"), inputID: input.id)
+                        try await Self.convert(input, request: request, backend: backend, photos: photos, events: events)
+                        let status: JobStatus = savesToPhotos ? .savedToPhotos : .finished
+                        await events.set(status, for: input.id)
+                        await events.append(status.title, inputID: input.id)
                     } catch {
-                        let status: JobStatus = Task.isCancelled || error is CancellationError ? .cancelled : .failed(error.localizedDescription)
+                        let status: JobStatus = error is CancellationError ? .cancelled : .failed(error.localizedDescription)
                         await events.set(status, for: input.id)
                         await events.append(status == .cancelled ? L10n.text("cancelled") : error.localizedDescription, inputID: input.id)
                     }
@@ -78,9 +103,13 @@ actor ConversionScheduler {
     }
 
     private static func convert(_ input: ImageInput, request: ConversionRequest,
-                                backend: any BackendConverting, events: ConversionEventBuffer) async throws {
+                                backend: any BackendConverting, photos: any PhotoLibrarySaving, events: ConversionEventBuffer) async throws {
         try Task.checkCancellation()
-        guard var command = request.command(for: input), let target = request.outputFile(for: input) else {
+        let savesToPhotos = request.settings.destinationChoice == .photosLibrary
+        let target = savesToPhotos
+            ? FileManager.default.temporaryDirectory.appendingPathComponent(request.outputFilename(for: input))
+            : request.outputFile(for: input)
+        guard let target, var command = request.command(for: input, outputDirectory: target.deletingLastPathComponent()) else {
             throw ConversionFailure(kind: .output, detail: L10n.text("choose_output_destination"))
         }
         let access = [input.url, target.deletingLastPathComponent()].filter { $0.startAccessingSecurityScopedResource() }
@@ -102,6 +131,13 @@ actor ConversionScheduler {
             throw ConversionFailure(kind: .output, detail: L10n.text("invalid_output"))
         }
         try Task.checkCancellation()
+        if savesToPhotos {
+            await events.set(.savingPhotos, for: input.id)
+            try Task.checkCancellation()
+            try await photos.save(file: result, originalFilename: target.lastPathComponent)
+            // A successful commit stays successful even when cancellation arrived while saving.
+            return
+        }
         do {
             // Never replace existing output, including a target created after preflight.
             try OutputPublisher.publish(result, to: target)

@@ -47,9 +47,11 @@ private struct StudioOutputSettings: View {
             if store.settings.destinationChoice == .custom {
                 Button(L10n.text("choose_folder"), systemImage: "folder") { store.pickOutputFolder() }
             }
-            Text(outputURL?.path(percentEncoded: false) ?? L10n.text("choose_output_destination"))
+            Text(store.settings.destinationChoice == .photosLibrary
+                 ? L10n.text("photos_destination_note")
+                 : outputURL?.path(percentEncoded: false) ?? L10n.text("choose_output_destination"))
                 .font(.caption).foregroundStyle(.secondary)
-                .lineLimit(2).truncationMode(.middle).textSelection(.enabled)
+                .lineLimit(store.settings.destinationChoice == .photosLibrary ? nil : 2).truncationMode(.middle).textSelection(.enabled)
             if store.settings.destinationChoice == .sourceFolder {
                 Text(L10n.text("demo_destination_note"))
                     .font(.caption).foregroundStyle(.secondary)

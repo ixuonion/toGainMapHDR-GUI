@@ -122,3 +122,18 @@
 "error_unsupported" = "Unsupported or damaged image";
 "error_process" = "Backend process failed";
 "import_while_converting" = "Wait for conversion to finish or cancel it before importing more images.";
+
+/* Photos Library output */
+"photos_library" = "Photos Library";
+"photos_destination_note" = "Save converted HEIC originals to Photos Library. The first save requires permission to add photos. If iCloud Photos is enabled, the system handles syncing.";
+"photos_authorizing" = "Waiting for permission to add photos…";
+"photos_saving" = "Saving to Photos Library…";
+"photos_saved" = "Saved to Photos Library";
+"photos_denied" = "Permission to add photos was denied. In System Settings → Privacy & Security → Photos, allow GainMapHDR to add photos, then convert again. You can also save to a folder.";
+"photos_restricted" = "System restrictions prevent adding photos. Check device restrictions or save to a folder.";
+"photos_save_failed" = "Could not save to Photos Library. Saved photos remain in your library; select only failed images before converting again to avoid duplicates.";
+"photos_missing_usage" = "Launch the packaged GainMapHDR.app to save to Photos Library; this executable is missing its photo privacy description.";
+"photos_cancelling" = "Cancelling… Waiting for any submitted saves; saved photos will remain.";
+"photos_summary" = "Photos Library: %d saved · %d failed · %d cancelled";
+"photos_convert_save" = "Convert & Save";
+"photos_command_note" = "Each image is converted into a private temporary directory, then its original HEIC file is saved using PhotoKit. There is no standalone shell command for saving to Photos Library.";

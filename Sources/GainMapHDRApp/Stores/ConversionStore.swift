@@ -27,17 +27,20 @@ final class ConversionStore {
     @ObservationIgnored private var lastOutputURL: URL?
     @ObservationIgnored private var pendingInputURLs: [URL] = []
 
-    init(backend: any BackendConverting = BackendProcessService()) {
-        scheduler = ConversionScheduler(backend: backend)
+    init(backend: any BackendConverting = BackendProcessService(), photos: any PhotoLibrarySaving = PhotoLibraryService()) {
+        scheduler = ConversionScheduler(backend: backend, photos: photos)
     }
 
-    var canConvert: Bool { !inputs.isEmpty && outputURL != nil && !isConverting && !isImporting }
+    var canConvert: Bool { !inputs.isEmpty && (settings.destinationChoice == .photosLibrary || outputURL != nil) && !isConverting && !isImporting }
     var canImport: Bool { !isConverting && !isImporting }
     var outputURL: URL? { ConversionRequest(inputs: inputs, settings: settings).outputURL }
     var representativeConversionCommand: ConversionCommand? {
         ConversionRequest(inputs: inputs, settings: settings).representativeCommand()
     }
-    var representativeCommand: String { representativeConversionCommand?.displayString ?? L10n.text("add_images_to_build_command") }
+    var representativeCommand: String {
+        if settings.destinationChoice == .photosLibrary && !inputs.isEmpty { return L10n.text("photos_command_note") }
+        return representativeConversionCommand?.displayString ?? L10n.text("add_images_to_build_command")
+    }
     var modeTitle: String { L10n.text(inputs.count > 1 ? "batch_queue" : "single_image") }
     var collectionSummaryTitle: String { String(format: L10n.text("images_selected"), inputs.count) }
 
@@ -139,6 +142,7 @@ final class ConversionStore {
     func startConversion() {
         guard canConvert else { return }
         settings.clampValues()
+        presentedError = nil
         let request = ConversionRequest(inputs: inputs, settings: settings)
         jobs = inputs.map { ConversionJob(input: $0) }
         jobIndices = Dictionary(uniqueKeysWithValues: jobs.enumerated().map { ($0.element.input.id, $0.offset) })
@@ -163,7 +167,7 @@ final class ConversionStore {
                 await group.waitForAll()
             }
             apply(await events.drain())
-            for index in jobs.indices where jobs[index].status == .queued || jobs[index].status == .running {
+            for index in jobs.indices where jobs[index].status.isPending {
                 jobs[index].status = .cancelled
             }
             let cancelled = jobs.contains { $0.status == .cancelled }
@@ -171,14 +175,24 @@ final class ConversionStore {
             isCancelling = false
             conversionTask = nil
             let failed = jobs.contains { if case .failed = $0.status { true } else { false } }
-            statusMessage = L10n.text(cancelled ? "cancelled" : failed ? "completed_with_errors" : "conversion_finished")
+            if request.settings.destinationChoice == .photosLibrary {
+                let saved = jobs.filter { $0.status == .savedToPhotos }.count
+                let failedCount = jobs.filter { if case .failed = $0.status { true } else { false } }.count
+                let cancelledCount = jobs.filter { $0.status == .cancelled }.count
+                statusMessage = String(format: L10n.text("photos_summary"), saved, failedCount, cancelledCount)
+                if failed, let failure = jobs.compactMap({ job -> String? in
+                    if case .failed(let message) = job.status { return message }; return nil
+                }).first { presentedError = failure }
+            } else {
+                statusMessage = L10n.text(cancelled ? "cancelled" : failed ? "completed_with_errors" : "conversion_finished")
+            }
         }
     }
 
     func cancelConversion() {
         guard isConverting, !isCancelling else { return }
         isCancelling = true
-        statusMessage = L10n.text("cancelling")
+        statusMessage = L10n.text(settings.destinationChoice == .photosLibrary ? "photos_cancelling" : "cancelling")
         conversionTask?.cancel()
     }
 
@@ -200,10 +214,22 @@ final class ConversionStore {
         }
         if let log = update.log { logText = log }
         let completed = jobs.reduce(0) { count, job in
-            switch job.status { case .finished, .failed: count + 1; default: count }
+            switch job.status {
+            case .finished, .savedToPhotos, .failed: count + 1
+            case .cancelled where settings.destinationChoice == .photosLibrary: count + 1
+            default: count
+            }
         }
         progress = jobs.isEmpty ? 0 : Double(completed) / Double(jobs.count)
-        if !isCancelling { statusMessage = String(format: L10n.text("batch_progress"), completed, jobs.count) }
+        if !isCancelling {
+            if jobs.contains(where: { $0.status == .authorizingPhotos }) {
+                statusMessage = L10n.text("photos_authorizing")
+            } else if jobs.contains(where: { $0.status == .savingPhotos }) {
+                statusMessage = L10n.text("photos_saving")
+            } else {
+                statusMessage = String(format: L10n.text("batch_progress"), completed, jobs.count)
+            }
+        }
     }
 
     private var readyMessage: String {

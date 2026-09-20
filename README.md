@@ -70,3 +70,26 @@ GAINMAP_BENCHMARK_REPORT=/tmp/gainmap-benchmark.json \
 上游许可证位于 `Sources/GainMapHDRApp/Resources/backend/LICENSE-toGainMapHDR`，随应用一同分发。
 
 应用图标使用 `Sources/GainMapHDRApp/Resources/AppIcon.icns`，构建时复制到应用包并由 `CFBundleIconFile` 引用。
+
+### 保存到照片图库 / Photos Library
+
+在现有「输出位置」中选择「照片图库」，然后点击「转换并保存」。首次保存仅申请
+PhotoKit 的 `.addOnly` 权限；应用不读取图库，也不申请完整图库访问权限。
+请使用 `bash script/build_and_run.sh --package` 打包后的 `dist/GainMapHDR.app`，
+以加载主应用中的中英文 `NSPhotoLibraryAddUsageDescription` 权限说明。
+
+转换器生成的 HEIC 原文件通过 `PHAssetCreationRequest.addResource(with: .photo, fileURL:options:)`
+直接导入，不经过二次编码。HDR、Gain Map、色彩及转换结果中已有的元数据均随原文件交给系统；
+这不会补回源文件在原有转换过程中未写入 HEIC 的信息。每张图片使用独立临时目录，
+同名输入也可分别保存。图库导入成功、失败及转换取消后均清理暂存文件。
+
+取消会停止后续工作并终止正在运行的转换；已经提交的 PhotoKit 保存无法撤回，
+应用会等待系统完成回调后清理文件，并按真实结果显示「已保存到照片图库」或失败。
+已保存的照片会保留。部分失败后，请仅选择失败的图片重新转换，避免重复添加。
+拒绝权限或系统限制会显示对应提示，仍可改为输出到文件夹。
+若启用了 iCloud Photos，同步由系统处理；应用只报告本地图库保存结果。
+
+`PhotoLibrarySaving` 和 `PhotoLibraryAuthorizing` 可注入测试替身。自动测试覆盖权限、单张、批量、
+同名文件、原文件字节一致性、部分失败、取消期间的实际提交结果、只读源目录及临时文件清理，
+不会操作真实照片图库。真实权限弹窗和 Photos「导出未修改的原片」比对步骤见
+[Photos 验收说明](docs/validation/PHOTOS-LIBRARY.md)。

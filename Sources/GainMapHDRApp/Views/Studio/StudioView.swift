@@ -81,7 +81,7 @@ struct StudioView: View {
                 Button {
                     store.isConverting ? store.cancelConversion() : store.startConversion()
                 } label: {
-                    Label(L10n.text(store.isCancelling ? "cancelling" : store.isConverting ? "cancel" : "demo_convert_all"),
+                    Label(L10n.text(store.isCancelling ? "cancelling" : store.isConverting ? "cancel" : store.settings.destinationChoice == .photosLibrary ? "photos_convert_save" : "demo_convert_all"),
                           systemImage: store.isConverting ? "stop.fill" : "play.fill")
                 }
                 .buttonStyle(.borderedProminent)
@@ -362,7 +362,7 @@ private struct StudioDiagnostics: View {
                     }
                     .disabled(store.representativeConversionCommand == nil)
                 }
-                ScrollView { CommandDisplayView(command: store.representativeConversionCommand) }
+                ScrollView { CommandDisplayView(command: store.representativeConversionCommand, emptyMessage: store.representativeCommand) }
             }
             .padding(14).frame(minWidth: 180, maxWidth: .infinity)
             Divider()

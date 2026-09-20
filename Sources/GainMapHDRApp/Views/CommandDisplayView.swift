@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CommandDisplayView: View {
     let command: ConversionCommand?
+    var emptyMessage = L10n.text("add_images_to_build_command")
 
     var body: some View {
         Text(attributedCommand)
@@ -14,7 +15,7 @@ struct CommandDisplayView: View {
 
     private var attributedCommand: AttributedString {
         guard let command else {
-            var empty = AttributedString(L10n.text("add_images_to_build_command"))
+            var empty = AttributedString(emptyMessage)
             empty.foregroundColor = .secondary
             return empty
         }

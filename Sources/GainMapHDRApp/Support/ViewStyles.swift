@@ -12,8 +12,8 @@ struct StatusBadge: View {
     private var symbolName: String {
         switch status {
         case .queued: "clock"
-        case .running: "progress.indicator"
-        case .finished: "checkmark.circle.fill"
+        case .running, .savingPhotos, .authorizingPhotos: "progress.indicator"
+        case .finished, .savedToPhotos: "checkmark.circle.fill"
         case .failed: "exclamationmark.triangle.fill"
         case .cancelled: "xmark.circle"
         }
@@ -21,13 +21,13 @@ struct StatusBadge: View {
 
     private var foregroundStyle: AnyShapeStyle {
         switch status {
-        case .finished:
+        case .finished, .savedToPhotos:
             AnyShapeStyle(.green)
         case .failed:
             AnyShapeStyle(.red)
         case .cancelled:
             AnyShapeStyle(.secondary)
-        case .queued, .running:
+        case .queued, .running, .savingPhotos, .authorizingPhotos:
             AnyShapeStyle(.secondary)
         }
     }
